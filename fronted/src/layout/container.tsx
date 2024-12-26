@@ -1,3 +1,5 @@
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+
 import { Outlet, useNavigate } from 'react-router'
 import { useUserAuthStore } from '@/store/user'
 import Header from './header/header'
@@ -15,14 +17,17 @@ export default function MainLayout() {
   }, [user, navigate])
 
   return (
-    <div className="min-h-screen">
-      <Header />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-6">
-          <Outlet />
-        </main>
+    <SidebarProvider>
+      <div className="min-h-screen">
+        <Header />
+        <div className="flex">
+          <Sidebar />
+          <main className="flex-1 p-6">
+            <SidebarTrigger />
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }

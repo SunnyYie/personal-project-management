@@ -1,30 +1,83 @@
-import { Link, useLocation } from 'react-router'
-import { routes, getMenuRoutes } from '@/router'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { menuFilter, useFlattenedRoutes, useRouteToMenuFn } from '@/router/routes/util';
+import { useLocation, useMatches, useNavigate } from 'react-router';
+import { useState, useEffect, useMemo } from 'react';
+import { routes } from '@/router/routes';
 
-export default function Sidebar() {
-  const menuRoutes = getMenuRoutes(routes)
-  const location = useLocation()
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar"
+
+export default function AppSidebar() {
+  const navigate = useNavigate();
+
+  // 初始化选中菜单
+  const { pathname } = useLocation();
+  const matches = useMatches();
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+
+  // 返回路由转为菜单格式的函数
+  const routeToMenuFn = useRouteToMenuFn();
+  // 获取所有路由
+  const permissionRoutes = routes;
+  // 从路由中过滤出菜单
+  const menuList = useMemo(() => {
+    const menuRoutes = menuFilter(permissionRoutes);
+    return routeToMenuFn(menuRoutes);
+  }, [routeToMenuFn]);
+
+  // 获取拍平后的路由菜单
+  const flattenedRoutes = useFlattenedRoutes();
+
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+
+  // 初始化展示的菜单
+  const onOpenChange = (keys: string[]) => {
+    setOpenKeys(keys);
+  };
+  // 菜单点击事件
+  const onClick = ({ key }: { key: string }) => {
+    // 从扁平化的路由信息里面匹配当前点击的那个
+    const nextLink = flattenedRoutes?.find((el) => el.key === key);
+
+    if (nextLink?.hideTab && nextLink?.frameSrc) {
+      window.open(nextLink?.frameSrc, '_blank');
+      return;
+    }
+    navigate(key);
+  };
+
+  useEffect(() => {
+    setSelectedKeys([pathname]);
+  }, [pathname, matches]);
 
   return (
-    <div className="w-64 min-h-screen bg-background border-r">
-      <div className="space-y-2 py-4">
-        {menuRoutes.map(route => {
-          const Icon = route.meta?.icon
-          return (
-            <Link key={route.path} to={`/dashboard/${route.path}`}>
-              <Button
-                variant="ghost"
-                className={cn('w-full justify-start', location.pathname === `/dashboard/${route.path}` && 'bg-muted')}
-              >
-                {Icon && <Icon className="mr-2 h-4 w-4" />}
-                {route.meta?.title}
-              </Button>
-            </Link>
-          )
-        })}
-      </div>
-    </div>
+    <Sidebar defaultValue={openKeys}>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuList.map((item) => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton asChild>
+                    <a onClick={() => onClick(item.key)}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   )
 }
