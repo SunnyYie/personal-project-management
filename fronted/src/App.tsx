@@ -1,10 +1,12 @@
-import { ThemeProvider } from '@/components/theme-provider'
-import Router from './router/routes'
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import Router from "./router/routes";
 
 export default function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider storageKey="vite-ui-theme">
       <Router />
+      <Toaster />
     </ThemeProvider>
-  )
+  );
 }

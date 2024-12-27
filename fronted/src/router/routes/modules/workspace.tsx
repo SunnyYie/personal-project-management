@@ -7,33 +7,35 @@ import { AppRouteObject } from "@/router/types";
 import { Suspense, lazy } from "react";
 import { Navigate, Outlet } from "react-router";
 
-const Dashboard = lazy(() => import('@/pages/workspace/dashboard'))
+const Dashboard = lazy(() => import("@/pages/workspace/dashboard"));
 
-export const workspace: AppRouteObject = {
-    order: 1,
-    path: 'workspace',
-    element: (
-        <Suspense fallback={<CircleLoading />}>
-            <Outlet />
-        </Suspense>
-    ),
-    meta: {
-        key: 'workspace',
-        icon: <SvgIcon icon="ic-analysis" size="24" />,
-        label: workspaceObj.name
+const workspace: AppRouteObject = {
+  order: 1,
+  path: "workspace",
+  element: (
+    <Suspense fallback={<CircleLoading />}>
+      <Outlet />
+    </Suspense>
+  ),
+  meta: {
+    key: "workspace",
+    icon: <SvgIcon icon="ic-analysis" size="24" />,
+    label: workspaceObj.name,
+  },
+  children: [
+    {
+      index: true,
+      element: <Navigate to="/workspace/dashboard" replace />,
     },
-    children: [
-        {
-            index: true,
-            element: <Navigate to="/workspace/dashboard" replace />,
-        },
-        {
-            path: 'dashboard',
-            element: <Dashboard />,
-            meta: {
-                key: '/workspace/dashboard',
-                label: workspaceObj.dashboard.name
-            }
-        }
-    ]
-}
+    {
+      path: "dashboard",
+      element: <Dashboard />,
+      meta: {
+        key: "/workspace/dashboard",
+        label: workspaceObj.dashboard.name,
+      },
+    },
+  ],
+};
+
+export default workspace;

@@ -1,20 +1,20 @@
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
-import { Outlet, useNavigate } from 'react-router'
-import { useUserAuthStore } from '@/store/user'
-import Header from './header/header'
-import { useEffect } from 'react'
-import Sidebar from './siderbar'
+import { Outlet, useNavigate } from "react-router";
+import { useUserAuthStore } from "@/store/user";
+import Header from "./header/header";
+import { useEffect } from "react";
+import Sidebar from "./siderbar";
 
 export default function MainLayout() {
-  const user = useUserAuthStore(state => state.user)
-  const navigate = useNavigate()
+  const user = useUserAuthStore((state) => state.user);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) {
-      navigate('/login')
+      navigate("/login");
     }
-  }, [user, navigate])
+  }, [user, navigate]);
 
   return (
     <SidebarProvider>
@@ -29,5 +29,5 @@ export default function MainLayout() {
         </div>
       </div>
     </SidebarProvider>
-  )
+  );
 }

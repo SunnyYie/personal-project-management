@@ -1,47 +1,46 @@
-import SvgIcon from '@/components/svg-icon';
-import { AppRouteObject, RouteMeta } from '../types'
-import { useCallback, useMemo } from 'react';
-import { ascend } from 'ramda';
-import { routes } from '.';
+import SvgIcon from "@/components/svg-icon";
+import { AppRouteObject, RouteMeta } from "../types";
+import { useCallback, useMemo } from "react";
+import { ascend } from "ramda";
+import { routes } from ".";
 
 /**
  *   routes -> menus
  */
 export function useRouteToMenuFn() {
-  const routeToMenuFn = useCallback(
-    (items: AppRouteObject[]) => {
-      return items
-        .filter((item) => !item.meta?.hideMenu)
-        .map((item) => {
-          const menuItem: any = [];
-          const { meta, children } = item;
+  const routeToMenuFn = useCallback((items: AppRouteObject[]) => {
+    return items
+      .filter((item) => !item.meta?.hideMenu)
+      .map((item) => {
+        const menuItem: any = [];
+        const { meta, children } = item;
 
-          if (meta) {
-            const { key, label, icon } = meta;
-            menuItem.key = key;
-            menuItem.label = (
-              <div className={`inline-flex items-center 'justify-between'} `}>
-                <div>{label}</div>
-              </div>
-            );
+        if (meta) {
+          const { key, label, icon } = meta;
+          menuItem.key = key;
+          menuItem.label = (
+            <div className={`inline-flex items-center 'justify-between'} `}>
+              <div>{label}</div>
+            </div>
+          );
 
-            if (icon) {
-              if (typeof icon === 'string') {
-                menuItem.icon = <SvgIcon icon={icon} size={24} className="ant-menu-item-icon" />;
-              } else {
-                menuItem.icon = icon;
-              }
+          if (icon) {
+            if (typeof icon === "string") {
+              menuItem.icon = (
+                <SvgIcon icon={icon} size={24} className="ant-menu-item-icon" />
+              );
+            } else {
+              menuItem.icon = icon;
             }
           }
+        }
 
-          if (children) {
-            menuItem.children = routeToMenuFn(children);
-          }
-          return menuItem;
-        });
-    },
-    [],
-  );
+        if (children) {
+          menuItem.children = routeToMenuFn(children);
+        }
+        return menuItem;
+      });
+  }, []);
   return routeToMenuFn;
 }
 
@@ -78,13 +77,12 @@ export function flattenMenuRoutes(routes: AppRouteObject[]) {
  */
 export function useFlattenedRoutes() {
   const flattenRoutes = useCallback(flattenMenuRoutes, []);
-  const permissionRoutes = routes
+  const permissionRoutes = routes;
   return useMemo(() => {
     const menuRoutes = menuFilter(permissionRoutes);
     return flattenRoutes(menuRoutes);
   }, [flattenRoutes, permissionRoutes]);
 }
-
 
 /**
  * 基于 src/router/routes/modules 文件结构动态生成路由
@@ -92,7 +90,7 @@ export function useFlattenedRoutes() {
 export function getRoutesFromModules() {
   const menuModules: AppRouteObject[] = [];
 
-  const modules = import.meta.glob('./modules/**/*.tsx', { eager: true });
+  const modules = import.meta.glob("./modules/**/*.tsx", { eager: true });
   Object.keys(modules).forEach((key) => {
     const mod = (modules as any)[key].default || {};
     const modList = Array.isArray(mod) ? [...mod] : [mod];
