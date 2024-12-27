@@ -27,6 +27,34 @@ model User {
 
   password String
 
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  OperationLog OperationLog[]
+}
+
+model VerificationCode {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+model OperationLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int? // 关联的用户ID
+  email     String? // 用户邮箱，冗余存储方便查询
+  ip        String // IP地址
+  method    String // HTTP方法
+  path      String // 请求路径
+  params    Json? // 请求参数
+  userAgent String // 浏览器信息
+  device    String? // 设备信息
+  platform  String? // 操作系统
+  status    Int // 响应状态码
+  response  Json? // 响应数据
+  duration  Int // 请求处理时长(ms)
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
 }
