@@ -6,16 +6,13 @@ import { Injectable } from '@nestjs/common';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * 用户注册
-   * @param data
-   * @returns res
-   */
-  async create(data: User) {
-    const res = await this.prisma.user.create({
-      data,
-    });
+  async findUser(): Promise<User[]> {
+    return this.prisma.user.findMany();
+  }
 
-    return res;
+  async findUserByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
   }
 }

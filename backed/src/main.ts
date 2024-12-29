@@ -14,7 +14,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // 设置全局路由前缀
-  app.setGlobalPrefix('api');
+  // app.setGlobalPrefix('api');
 
   // 配置 session
   app.use(

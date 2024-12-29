@@ -52,7 +52,7 @@ export class AuthService {
   async sendVerificationCode(email: string) {
     const code = Math.random().toString().slice(2, 8);
 
-    const existCode = await this.prisma.verificationCode.findFirst({
+    const existCode = await this.prisma.verificationCode.findUnique({
       where: { email },
     });
 
@@ -107,9 +107,22 @@ export class AuthService {
     return;
   }
 
-  async login(email: string, code: string, req: Request) {
+  async login(email: string, password: string, code: string, req: Request) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('密码无效');
+    }
+
     // 验证验证码
-    const validCode = await this.prisma.verificationCode.findFirst({
+    const validCode = await this.prisma.verificationCode.findUnique({
       where: {
         email,
         code,
@@ -121,14 +134,6 @@ export class AuthService {
 
     if (!validCode) {
       throw new ValidationException('验证码无效或已过期');
-    }
-
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      throw new NotFoundException('用户不存在');
     }
 
     // 生成token
@@ -145,6 +150,83 @@ export class AuthService {
       token,
       refreshToken,
       userInfo: user,
+    };
+  }
+
+  async resetPassword(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+
+    const currentEmail = email + code;
+    // 存储重置密码验证码
+    await this.prisma.verificationCode.create({
+      data: {
+        email: currentEmail,
+        code,
+        expiresAt: new Date(Date.now() + 3 * 60 * 1000), // 3分钟有效期
+      },
+    });
+
+    // 发送重置密码验证码邮件
+    const res = await this.resend.emails.send({
+      from: '739507690@qq.com',
+      to: email,
+      subject: '重置密码验证码',
+      html: `<p>您的重置密码验证码是: ${code}</p>`,
+    });
+    if (res.error) {
+      throw new ValidationException(
+        `邮件发送失败，${res.error.name}: ${res.error.message}。验证码是：${code}`,
+      );
+    }
+  }
+
+  async confirmResetPassword(email: string, code: string, newPassword: string) {
+    const currentEmail = email + code;
+
+    // 验证验证码
+    const validCode = await this.prisma.verificationCode.findFirst({
+      where: {
+        email: currentEmail,
+        code,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!validCode) {
+      throw new ValidationException('验证码无效或已过期');
+    }
+
+    // 加密新密码
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // 更新用户密码
+    await this.prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword },
+    });
+
+    // 删除验证码记录
+    await this.prisma.verificationCode.delete({
+      where: { email: currentEmail },
+    });
+
+    return {
+      message: '密码修改成功',
     };
   }
 

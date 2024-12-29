@@ -28,11 +28,12 @@ export class LoggingInterceptor implements NestInterceptor {
 
     // 从 session 获取用户信息
     const sessionUser = request.session.user;
-    console.log(sessionUser);
 
     // 解析 User-Agent
     const ua = uap(request.headers['user-agent']);
     const userAgent = JSON.stringify(ua, null, ' ');
+
+    // console.log(sessionUser, userAgent, ua);
 
     return next.handle().pipe(
       tap(async (responseData) => {
