@@ -16,13 +16,13 @@ export class AuthController {
   }
 
   @Post('remove-code')
-  async removeCode(@Body() body:{email:string}) {
-    return this.authService.removeVerificationCode(body.email)
+  async removeCode(@Body() body: { email: string }) {
+    return this.authService.removeVerificationCode(body.email);
   }
 
   @Post('login')
-  async login(@Body() body: { email: string; code: string },@Request() req) {
-    return this.authService.login(body.email, body.code,req);
+  async login(@Body() body: { email: string; code: string }, @Request() req) {
+    return this.authService.login(body.email, body.code, req);
   }
 
   @Post('refresh-token')

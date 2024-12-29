@@ -8,9 +8,13 @@ import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { PrismaService } from './prisma/prisma.service';
+import { TransformInterceptor } from './interceptors/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // 设置全局路由前缀
+  app.setGlobalPrefix('api');
 
   // 配置 session
   app.use(
@@ -30,6 +34,9 @@ async function bootstrap() {
   // 注册全局日志拦截器
   const prismaService = app.get(PrismaService);
   app.useGlobalInterceptors(new LoggingInterceptor(prismaService));
+
+  // 统一接口返回数据
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   const config = new DocumentBuilder()
     .setTitle('个人项目管理系统API文档')

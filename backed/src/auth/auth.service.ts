@@ -5,7 +5,11 @@ import { Resend } from 'resend';
 import * as bcrypt from 'bcrypt';
 import { Request } from 'express';
 
-import { NotFoundException, UnauthorizedException, ValidationException } from '../exception/custom-exception';
+import {
+  NotFoundException,
+  UnauthorizedException,
+  ValidationException,
+} from '../exception/custom-exception';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +24,7 @@ export class AuthService {
 
   async register(email: string, password: string) {
     // 检查邮箱是否已存在
-    const existingUser = await this.prisma.user.findUnique({
+    const existingUser = await this.prisma.user.findFirst({
       where: { email },
     });
 
@@ -47,7 +51,26 @@ export class AuthService {
 
   async sendVerificationCode(email: string) {
     const code = Math.random().toString().slice(2, 8);
-    
+
+    const existCode = await this.prisma.verificationCode.findFirst({
+      where: { email },
+    });
+
+    // 如果存在验证码记录
+    if (existCode && existCode.expiresAt) {
+      // 如果验证码未过期，直接返回已存在的验证码
+      if (existCode.expiresAt > new Date()) {
+        return {
+          message: '验证码未过期',
+          verificationCode: existCode.code,
+        };
+      }
+      // 如果验证码已过期，删除旧记录
+      await this.prisma.verificationCode.delete({
+        where: { email },
+      });
+    }
+
     // 存储验证码（使用Redis更好）
     await this.prisma.verificationCode.create({
       data: {
@@ -58,26 +81,31 @@ export class AuthService {
     });
 
     // 发送验证码邮件
-    await this.resend.emails.send({
+    const res = await this.resend.emails.send({
       from: '739507690@qq.com',
       to: email,
       subject: '登录验证码',
       html: `<p>您的验证码是: ${code}</p>`,
     });
+    if (res.error) {
+      throw new ValidationException(
+        `邮件发送失败，${res.error.name}: ${res.error.message}。验证码是：${code}`,
+      );
+    }
   }
 
-  async removeVerificationCode(email:string){
+  async removeVerificationCode(email: string) {
     const verificationCode = await this.prisma.verificationCode.findUnique({
-        where:{email}
-    })
+      where: { email },
+    });
 
-    if(verificationCode && verificationCode.code){
-        await this.prisma.verificationCode.delete({
-            where:{email}
-        })
+    if (verificationCode && verificationCode.code) {
+      await this.prisma.verificationCode.delete({
+        where: { email },
+      });
     }
-    return
-}
+    return;
+  }
 
   async login(email: string, code: string, req: Request) {
     // 验证验证码
@@ -111,12 +139,12 @@ export class AuthService {
     );
 
     // 保存用户信息到 session
-    req.session.user = user
+    req.session.user = user as any;
 
     return {
       token,
       refreshToken,
-      userInfo:user
+      userInfo: user,
     };
   }
 
