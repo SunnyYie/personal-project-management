@@ -8,6 +8,7 @@ import { Suspense, lazy } from "react";
 import { Navigate, Outlet } from "react-router";
 
 const Dashboard = lazy(() => import("@/pages/workspace/dashboard"));
+const TodoList = lazy(() => import("@/pages/workspace/todoList"));
 
 const workspace: AppRouteObject = {
   order: 1,
@@ -34,6 +35,14 @@ const workspace: AppRouteObject = {
       meta: {
         key: "/workspace/dashboard",
         label: workspaceObj.dashboard.name,
+      },
+    },
+    {
+      path: "todoList",
+      element: <TodoList />,
+      meta: {
+        key: "/workspace/todoList",
+        label: workspaceObj.todoList.name,
       },
     },
   ],
