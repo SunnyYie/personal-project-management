@@ -1,3 +1,3 @@
 export default function DashBoard() {
-    return <div>1</div>
+  return <div className="bg-white">1</div>;
 }

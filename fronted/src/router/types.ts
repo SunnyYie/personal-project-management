@@ -1,5 +1,5 @@
-import { RouteObject, Params } from 'react-router'
-import { ReactNode } from 'react';
+import { RouteObject, Params } from "react-router";
+import { ReactNode } from "react";
 
 export interface RouteMeta {
   /**
@@ -48,10 +48,14 @@ export interface RouteMeta {
    * @example /user/:id
    */
   params?: Params<string>;
+  /**
+   * active menu
+   */
+  isActive?: boolean;
 }
 
 export type AppRouteObject = {
   order?: number;
   meta?: RouteMeta;
   children?: AppRouteObject[];
-} & Omit<RouteObject, 'children'>;
+} & Omit<RouteObject, "children">;

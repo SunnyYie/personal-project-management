@@ -1,5 +1,5 @@
 import { CircleLoading } from "@/components/Loading";
-import SvgIcon from "@/components/svg-icon";
+import { ClipboardCheck } from "lucide-react";
 
 import { AppRouteObject } from "@/router/types";
 import { taskObj } from "@/locales/task";
@@ -26,30 +26,30 @@ const task: AppRouteObject = {
   ),
   meta: {
     label: taskObj.name,
-    icon: <SvgIcon icon="ic-analysis" size="24" />,
+    icon: <ClipboardCheck />,
     key: "/task",
   },
   children: [
     {
       index: true,
-      element: <Navigate to="/task/index" replace />,
+      element: <Navigate to="/task/taskList" replace />,
     },
     {
       path: "taskList",
       element: <TaskList />,
-      meta: { label: taskObj.taskList.name, key: "/task/index" },
+      meta: { label: taskObj.taskList.name, key: "/task/taskList" },
     },
     {
       path: "detail",
       element: <TaskDetail />,
-      meta: { label: taskObj.detail.name, key: "/task/detail/:id" },
+      meta: { label: taskObj.detail.name, key: "/task/detail" },
     },
     {
       path: "projectTaskList",
       element: <ProjectTaskList />,
       meta: {
         label: taskObj.projectTaskList.name,
-        key: "/task/projectTaskList/index",
+        key: "/task/projectTaskList",
       },
     },
     {
@@ -57,7 +57,7 @@ const task: AppRouteObject = {
       element: <ProjectTaskDetail />,
       meta: {
         label: taskObj.projectTaskList.detail.name,
-        key: "/task/projectTaskList/detail/:id",
+        key: "/task/projectTaskDetail",
       },
     },
   ],

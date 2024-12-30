@@ -1,4 +1,3 @@
-import SvgIcon from "@/components/svg-icon";
 import { AppRouteObject, RouteMeta } from "../types";
 import { useCallback, useMemo } from "react";
 import { ascend } from "ramda";
@@ -16,6 +15,8 @@ export function useRouteToMenuFn() {
         const { meta, children } = item;
 
         if (meta) {
+          if (meta.isActive) menuItem.isActive = true;
+
           const { key, label, icon } = meta;
           menuItem.key = key;
           menuItem.label = (
@@ -25,20 +26,14 @@ export function useRouteToMenuFn() {
           );
 
           if (icon) {
-            if (typeof icon === "string") {
-              menuItem.icon = (
-                <SvgIcon icon={icon} size={24} className="ant-menu-item-icon" />
-              );
-            } else {
-              menuItem.icon = icon;
-            }
+            menuItem.icon = icon;
           }
         }
 
         if (children) {
           menuItem.children = routeToMenuFn(children);
         }
-        return menuItem;
+        return { ...menuItem };
       });
   }, []);
   return routeToMenuFn;
@@ -52,6 +47,7 @@ export const menuFilter = (items: AppRouteObject[]) => {
   return items
     .filter((item) => {
       const show = item.meta?.key;
+
       if (show && item.children) {
         item.children = menuFilter(item.children);
       }

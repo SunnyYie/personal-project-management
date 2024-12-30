@@ -1,8 +1,3 @@
-import { menuFilter, useFlattenedRoutes, useRouteToMenuFn } from '@/router/routes/util';
-import { useLocation, useMatches, useNavigate } from 'react-router';
-import { useState, useEffect, useMemo } from 'react';
-import { routes } from '@/router/routes';
-
 import {
   Sidebar,
   SidebarContent,
@@ -10,74 +5,91 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronRight } from "lucide-react";
+
+import {
+  getRoutesFromModules,
+  menuFilter,
+  useRouteToMenuFn,
+} from "@/router/routes/util";
+
+import { Link } from "react-router";
+import { useMemo } from "react";
 
 export default function AppSidebar() {
-  const navigate = useNavigate();
-
-  // 初始化选中菜单
-  const { pathname } = useLocation();
-  const matches = useMatches();
-  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-
   // 返回路由转为菜单格式的函数
   const routeToMenuFn = useRouteToMenuFn();
   // 获取所有路由
-  const permissionRoutes = routes;
+  const menuModuleRoutes = getRoutesFromModules();
   // 从路由中过滤出菜单
   const menuList = useMemo(() => {
-    const menuRoutes = menuFilter(permissionRoutes);
+    const menuRoutes = menuFilter(menuModuleRoutes);
     return routeToMenuFn(menuRoutes);
   }, [routeToMenuFn]);
 
-  // 获取拍平后的路由菜单
-  const flattenedRoutes = useFlattenedRoutes();
-
-  const [openKeys, setOpenKeys] = useState<string[]>([]);
-
-  // 初始化展示的菜单
-  const onOpenChange = (keys: string[]) => {
-    setOpenKeys(keys);
-  };
-  // 菜单点击事件
-  const onClick = ({ key }: { key: string }) => {
-    // 从扁平化的路由信息里面匹配当前点击的那个
-    const nextLink = flattenedRoutes?.find((el) => el.key === key);
-
-    if (nextLink?.hideTab && nextLink?.frameSrc) {
-      window.open(nextLink?.frameSrc, '_blank');
-      return;
-    }
-    navigate(key);
-  };
-
-  useEffect(() => {
-    setSelectedKeys([pathname]);
-  }, [pathname, matches]);
-
   return (
-    <Sidebar defaultValue={openKeys}>
+    <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel className="flex justify-between">
+            <span>PPM-SYSTEM</span>
+            <span>个人项目管理系统</span>
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuList.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton asChild>
-                    <a onClick={() => onClick(item.key)}>
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <Collapsible key={item.key} asChild defaultOpen={item.isActive}>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link to={item.key}>
+                        {item.icon}
+                        {item.label}
+                      </Link>
+                    </SidebarMenuButton>
+                    {item.children?.length ? (
+                      <>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuAction className="data-[state=open]:rotate-90">
+                            <ChevronRight />
+                            <span className="sr-only">Toggle</span>
+                          </SidebarMenuAction>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.children?.map(
+                              (subItem: { key: string; label: string }) => (
+                                <SidebarMenuSubItem key={subItem.key}>
+                                  <SidebarMenuSubButton asChild>
+                                    <Link to={subItem.key}>
+                                      {subItem.label}
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              )
+                            )}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </>
+                    ) : null}
+                  </SidebarMenuItem>
+                </Collapsible>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

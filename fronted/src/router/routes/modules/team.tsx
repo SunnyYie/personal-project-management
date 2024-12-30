@@ -1,11 +1,11 @@
 import { CircleLoading } from "@/components/Loading";
-import SvgIcon from "@/components/svg-icon";
+import { Users } from "lucide-react";
 
 import { AppRouteObject } from "@/router/types";
+import { teamObj } from "@/locales/team";
 
 import { Navigate, Outlet } from "react-router";
 import { Suspense, lazy } from "react";
-import { teamObj } from "@/locales/team";
 
 const TeamManage = lazy(() => import("@/pages/team/team-manage"));
 const ProjectManage = lazy(() => import("@/pages/team/project-manage"));
@@ -21,7 +21,7 @@ const team: AppRouteObject = {
   ),
   meta: {
     label: teamObj.name,
-    icon: <SvgIcon icon="ic-analysis" size="24" />,
+    icon: <Users />,
     key: "/team",
   },
   children: [

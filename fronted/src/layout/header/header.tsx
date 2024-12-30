@@ -5,22 +5,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 import { ModeToggle } from "./components/mode-toggle";
 import { Button } from "@/components/ui/button";
+import { Bell } from "lucide-react";
 
 import useUserAuthStore, { useUserActions } from "@/store/user";
 
 export default function Header() {
   const user = useUserAuthStore((state) => state.userInfo);
-  const { clearUserInfoAndToken } = useUserActions();
+  const { clearUserInfoAndToken }: { clearUserInfoAndToken: () => void } =
+    useUserActions();
 
   return (
-    <header className="border-b">
+    <header className="border-b   shadow">
       <div className="flex h-16 items-center px-4 justify-between">
-        <div className="text-xl font-bold">项目管理系统</div>
+        <SidebarTrigger />
+        <Separator orientation="vertical" className="mr-2 h-4" />
+        <div className="text-xl font-bold mr-auto">项目管理系统</div>
 
         <div className="flex items-center gap-4">
           <ModeToggle />
+
+          <Button variant="outline" size="icon">
+            <Bell className="h-5 w-5" />
+          </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

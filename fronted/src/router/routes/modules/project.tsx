@@ -1,5 +1,5 @@
 import { CircleLoading } from "@/components/Loading";
-import SvgIcon from "@/components/svg-icon";
+import { FolderKanban } from "lucide-react";
 
 import { projectObj } from "@/locales/project";
 import { AppRouteObject } from "@/router/types";
@@ -20,23 +20,23 @@ const project: AppRouteObject = {
   ),
   meta: {
     label: projectObj.name,
-    icon: <SvgIcon icon="ic-analysis" size="24" />,
+    icon: <FolderKanban />,
     key: "/project",
   },
   children: [
     {
       index: true,
-      element: <Navigate to="/project/index" replace />,
+      element: <Navigate to="/project/projectList" replace />,
     },
     {
       path: "projectList",
       element: <ProjectList />,
-      meta: { label: projectObj.projectList.name, key: "/project/index" },
+      meta: { label: projectObj.projectList.name, key: "/project/projectList" },
     },
     {
       path: "detail",
       element: <ProjectDetail />,
-      meta: { label: projectObj.detail.name, key: "/project/detail/:id" },
+      meta: { label: projectObj.detail.name, key: "/project/detail" },
     },
   ],
 };

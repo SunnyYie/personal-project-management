@@ -1,4 +1,5 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { LayoutBreadcrumb } from "./breadcrumb";
 import Header from "./header/header";
 import Sidebar from "./siderbar";
 
@@ -18,17 +19,17 @@ export default function MainLayout() {
   }, [user, navigate]);
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen">
-        <Header />
-        <div className="flex">
-          <Sidebar />
-          <main className="flex-1 p-6">
-            <SidebarTrigger />
+    <div className="min-h-screen flex flex-row">
+      <SidebarProvider>
+        <Sidebar />
+        <div className="flex flex-col flex-1">
+          <Header />
+          <LayoutBreadcrumb />
+          <main className="flex-1 px-4 bg-slate-100">
             <Outlet />
           </main>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </div>
   );
 }

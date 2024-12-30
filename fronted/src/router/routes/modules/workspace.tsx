@@ -1,5 +1,5 @@
 import { CircleLoading } from "@/components/Loading";
-import SvgIcon from "@/components/svg-icon";
+import { PanelsTopLeft } from "lucide-react";
 
 import { workspaceObj } from "@/locales/workspace";
 import { AppRouteObject } from "@/router/types";
@@ -18,9 +18,10 @@ const workspace: AppRouteObject = {
     </Suspense>
   ),
   meta: {
-    key: "workspace",
-    icon: <SvgIcon icon="ic-analysis" size="24" />,
+    key: "/workspace",
+    icon: <PanelsTopLeft />,
     label: workspaceObj.name,
+    isActive: true,
   },
   children: [
     {
