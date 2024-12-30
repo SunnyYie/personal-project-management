@@ -1,12 +1,18 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { useUserAuthStore } from '@/store/user'
-import { ModeToggle } from './components/mode-toggle'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ModeToggle } from "./components/mode-toggle";
+import { Button } from "@/components/ui/button";
+
+import useUserAuthStore, { useUserActions } from "@/store/user";
 
 export default function Header() {
-  const logout = useUserAuthStore(state => state.logout)
-  const user = useUserAuthStore(state => state.user)
+  const user = useUserAuthStore((state) => state.userInfo);
+  const { clearUserInfoAndToken } = useUserActions();
 
   return (
     <header className="border-b">
@@ -27,11 +33,13 @@ export default function Header() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>个人信息</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => logout()}>退出登录</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => clearUserInfoAndToken()}>
+                退出登录
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
     </header>
-  )
+  );
 }

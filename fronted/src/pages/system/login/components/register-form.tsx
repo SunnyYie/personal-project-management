@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-import { ResetFormSchema, ResetFormType } from "../types";
+import { RegisterFormSchema, RegisterFormType } from "@/api/user/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -12,8 +12,8 @@ export default function RegisterForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ResetFormType>({
-    resolver: zodResolver(ResetFormSchema),
+  } = useForm<RegisterFormType>({
+    resolver: zodResolver(RegisterFormSchema),
     mode: "onSubmit",
     reValidateMode: "onSubmit",
     defaultValues: {
@@ -23,8 +23,8 @@ export default function RegisterForm() {
     },
   });
 
-  const handleRegister = (data: ResetFormType) => {
-    const validatedFields = ResetFormSchema.safeParse(data);
+  const handleRegister = (data: RegisterFormType) => {
+    const validatedFields = RegisterFormSchema.safeParse(data);
 
     if (!validatedFields.success) {
       toast.error("验证失败，请重新输入", { position: "top-center" });

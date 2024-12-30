@@ -1,17 +1,33 @@
-import { useState } from 'react'
+import { useState } from "react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import ForgotPasswordForm from './components/forget-form'
-import RegisterForm from './components/reset-form'
-import LoginForm from './components/login-form'
+import ForgotPasswordForm from "./components/forget-form";
+import RegisterForm from "./components/register-form";
+import LoginForm from "./components/login-form";
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion } from "framer-motion";
+import { useUserToken } from "@/store/user";
+import { Navigate } from "react-router";
 
 export default function LoginPage() {
-  const [activeTab, setActiveTab] = useState('login')
-  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
+
+  const token = useUserToken();
+
+  // 判断用户是否有权限
+  if (token.token) {
+    // 如果有授权，则跳转到首页
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -31,7 +47,9 @@ export default function LoginPage() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <ForgotPasswordForm onBack={() => setShowForgotPassword(false)} />
+                <ForgotPasswordForm
+                  onBack={() => setShowForgotPassword(false)}
+                />
               </motion.div>
             ) : (
               <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -40,7 +58,9 @@ export default function LoginPage() {
                   <TabsTrigger value="register">注册</TabsTrigger>
                 </TabsList>
                 <TabsContent value="login">
-                  <LoginForm onForgotPassword={() => setShowForgotPassword(true)} />
+                  <LoginForm
+                    onForgotPassword={() => setShowForgotPassword(true)}
+                  />
                 </TabsContent>
                 <TabsContent value="register">
                   <RegisterForm />
@@ -51,5 +71,5 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </main>
-  )
+  );
 }

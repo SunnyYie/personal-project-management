@@ -88,9 +88,12 @@ export class AuthService {
       html: `<p>您的验证码是: ${code}</p>`,
     });
     if (res.error) {
-      throw new ValidationException(
-        `邮件发送失败，${res.error.name}: ${res.error.message}。验证码是：${code}`,
-      );
+      // throw new ValidationException(
+      //   `邮件发送失败，${res.error.name}: ${res.error.message}。验证码是：${code}`,
+      // );
+      return {
+        verificationCode: code,
+      };
     }
   }
 

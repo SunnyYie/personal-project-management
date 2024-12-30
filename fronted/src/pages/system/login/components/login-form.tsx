@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,17 +6,21 @@ import VerificationCodeInput from "./verification-code-input";
 import Github from "@/assets/icons/github";
 import Google from "@/assets/icons/google";
 
+import { LoginFormSchema, LoginFormType } from "@/api/user/types";
+import commonService from "@/api/commonService";
+import { useSignIn } from "@/store/user";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-import { LoginFormSchema, LoginFormType } from "../types";
+import { useState } from "react";
 
 interface LoginFormProps {
   onForgotPassword: () => void;
 }
 
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
-  const [showVerification, setShowVerification] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -33,17 +35,33 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
       password: "",
     },
   });
+  const [showVerification, setShowVerification] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (data: LoginFormType) => {
-    console.log(data, errors);
+  const navigate = useNavigate();
+
+  const mutation = useMutation({
+    mutationFn: commonService.sendCode,
+  });
+  const signIn = useSignIn();
+
+  const handleLogin = async (data: LoginFormType) => {
     if (!showVerification) {
+      setLoading(true);
       // 调用获取验证码的接口
+      await mutation.mutateAsync({ email: data.email });
 
+      setLoading(false);
       // 成功后展示
       setShowVerification(true);
       return;
     }
-    // 验证code是否等于验证码发送的code
+
+    setLoading(true);
+    await signIn(data);
+
+    setLoading(false);
+    navigate("/", { replace: true });
   };
 
   const handleVerification = (code: string) => {
@@ -54,10 +72,6 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
     console.log(`Login with ${provider}`);
   };
 
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
-
   return (
     <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
       <div className="space-y-2">
@@ -66,6 +80,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
           id="email"
           type="email"
           placeholder="your@email.com"
+          disabled={loading}
           {...register("email")}
         />
         {errors.email && (
@@ -78,6 +93,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
           id="password"
           type="password"
           placeholder="******"
+          disabled={loading}
           {...register("password")}
         />
         {errors.password && (
@@ -90,6 +106,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
           <Label htmlFor="verificationCode">验证码</Label>
           <VerificationCodeInput
             onComplete={handleVerification}
+            disabled={loading}
             {...register("verificationCode")}
           />
           {errors.verificationCode && (
@@ -100,11 +117,11 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
         </div>
       )}
 
-      <Button type="submit" className="w-full">
+      <Button type="submit" className="w-full" disabled={loading}>
         {showVerification ? "登录" : "发送验证码"}
       </Button>
       <div className="text-center">
-        <Button variant="link" onClick={onForgotPassword}>
+        <Button variant="link" onClick={onForgotPassword} disabled={loading}>
           忘记密码？
         </Button>
       </div>
@@ -120,10 +137,18 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4 mt-4">
-        <Button variant="outline" onClick={() => handleSocialLogin("github")}>
+        <Button
+          variant="outline"
+          onClick={() => handleSocialLogin("github")}
+          disabled={loading}
+        >
           <Github className="mr-2 h-4 w-4" /> GitHub
         </Button>
-        <Button variant="outline" onClick={() => handleSocialLogin("google")}>
+        <Button
+          variant="outline"
+          onClick={() => handleSocialLogin("google")}
+          disabled={loading}
+        >
           <Google className="mr-2 h-4 w-4" /> Google
         </Button>
       </div>
