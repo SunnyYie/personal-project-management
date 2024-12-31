@@ -9,6 +9,7 @@ import { Navigate, Outlet } from "react-router";
 
 const Dashboard = lazy(() => import("@/pages/workspace/dashboard"));
 const TodoList = lazy(() => import("@/pages/workspace/todoList"));
+const Kanban = lazy(() => import("@/pages/workspace/kanban"));
 
 const workspace: AppRouteObject = {
   order: 1,
@@ -43,6 +44,14 @@ const workspace: AppRouteObject = {
       meta: {
         key: "/workspace/todoList",
         label: workspaceObj.todoList.name,
+      },
+    },
+    {
+      path: "kanban",
+      element: <Kanban />,
+      meta: {
+        key: "/workspace/kanban",
+        label: workspaceObj.kanban.name,
       },
     },
   ],

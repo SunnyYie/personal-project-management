@@ -6,4 +6,7 @@ export const workspaceObj = {
   todoList: {
     name: "待办事项",
   },
+  kanban: {
+    name: "任务看板",
+  },
 };
