@@ -1,11 +1,11 @@
-import styled from 'styled-components';
-
-import { ThemeMode } from '#/enum';
+import styled from "styled-components";
+import { ThemeMode } from "./type";
 
 export const StyledCalendar = styled.div<{ $themeMode: ThemeMode }>`
   width: 100%;
   height: 100%;
   overflow: auto;
+  padding: 20px;
   -ms-overflow-style: none; /* 适用于Internet Explorer, Edge */
   scrollbar-width: none; /* 适用于Firefox */
   overflow-y: scroll;
@@ -20,14 +20,17 @@ export const StyledCalendar = styled.div<{ $themeMode: ThemeMode }>`
     --fc-now-indicator-color: #ff5630;
     --fc-today-bg-color: rgba(145, 158, 171, 0.08);
     --fc-page-bg-color: ${(props) =>
-      props.$themeMode === ThemeMode.Light ? '#ffffff' : '#161c24'};
+      props.$themeMode === ThemeMode.Light ? "#ffffff" : "#161c24"};
     --fc-neutral-bg-color: ${(props) =>
-      props.$themeMode === ThemeMode.Light ? '#F4F6F8' : 'rgba(145, 158, 171, 0.12)'};
+      props.$themeMode === ThemeMode.Light
+        ? "#F4F6F8"
+        : "rgba(145, 158, 171, 0.12)"};
     --fc-list-event-hover-bg-color: rgba(145, 158, 171, 0.08);
     --fc-highlight-color: rgba(145, 158, 171, 0.08);
 
     a {
-      color: ${(props) => (props.$themeMode === ThemeMode.Dark ? '#ffffff' : '#212b36')};
+      color: ${(props) =>
+        props.$themeMode === ThemeMode.Dark ? "#ffffff" : "#212b36"};
     }
     .fc-col-header {
       box-shadow: rgba(145, 158, 171, 0.2) 0px -1px 0px inset;
@@ -37,7 +40,7 @@ export const StyledCalendar = styled.div<{ $themeMode: ThemeMode }>`
       .fc-col-header-cell-cushion {
         font-weight: 600;
         font-size: 0.875rem;
-        font-family: 'Public Sans', sans-serif;
+        font-family: "Public Sans", sans-serif;
         padding: 8px 0px;
       }
     }
@@ -49,7 +52,7 @@ export const StyledCalendar = styled.div<{ $themeMode: ThemeMode }>`
       .fc-daygrid-day-number {
         line-height: 1.57143;
         font-size: 0.875rem;
-        font-family: 'Public Sans', sans-serif;
+        font-family: "Public Sans", sans-serif;
         font-weight: 400;
         padding: 8px 8px 0px;
       }
@@ -73,7 +76,7 @@ export const StyledCalendar = styled.div<{ $themeMode: ThemeMode }>`
             top: 0px;
             left: 0px;
             width: 100%;
-            content: '';
+            content: "";
             opacity: 0.24;
             height: 100%;
             border-radius: 6px;
@@ -117,17 +120,21 @@ export const StyledCalendar = styled.div<{ $themeMode: ThemeMode }>`
       .fc-list-day-side-text {
         line-height: 1.57143;
         font-size: 0.875rem;
-        font-family: 'Public Sans', sans-serif;
+        font-family: "Public Sans", sans-serif;
         font-weight: 400;
       }
 
       .fc-list-event-time {
         color: ${(props) =>
-          props.$themeMode === ThemeMode.Light ? 'rgb(99, 115, 129)' : 'rgb(145, 158, 171)'};
+          props.$themeMode === ThemeMode.Light
+            ? "rgb(99, 115, 129)"
+            : "rgb(145, 158, 171)"};
       }
       .fc-event-title {
         color: ${(props) =>
-          props.$themeMode === ThemeMode.Dark ? 'rgb(255, 255, 255)' : 'rgb(33, 43, 54)'};
+          props.$themeMode === ThemeMode.Dark
+            ? "rgb(255, 255, 255)"
+            : "rgb(33, 43, 54)"};
       }
       .fc-list-table {
         th,

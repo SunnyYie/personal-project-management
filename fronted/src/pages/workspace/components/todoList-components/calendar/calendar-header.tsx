@@ -1,12 +1,30 @@
-import { Button, Dropdown, MenuProps } from 'antd';
-import dayjs from 'dayjs';
-import { ReactNode, useMemo } from 'react';
+import {
+  Calendar1,
+  CalendarDays,
+  CalendarRange,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  LayoutList,
+  Plus,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-import { IconButton, Iconify } from '@/components/icon';
-import { useResponsive } from '@/theme/hooks';
+import { ReactNode, useMemo } from "react";
+import dayjs from "dayjs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-export type HandleMoveArg = 'next' | 'prev' | 'today';
-export type ViewType = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek';
+export type HandleMoveArg = "next" | "prev" | "today";
+export type ViewType =
+  | "dayGridMonth"
+  | "timeGridWeek"
+  | "timeGridDay"
+  | "listWeek";
 type ViewTypeMenu = {
   key: string;
   label: string;
@@ -21,41 +39,45 @@ type Props = {
   onCreate: VoidFunction;
   onViewTypeChange: (view: ViewType) => void;
 };
-export default function CalendarHeader({ now, view, onMove, onCreate, onViewTypeChange }: Props) {
-  const { screenMap } = useResponsive();
-
+export default function CalendarHeader({
+  now,
+  view,
+  onMove,
+  onCreate,
+  onViewTypeChange,
+}: Props) {
   const items = useMemo<ViewTypeMenu[]>(
     () => [
       {
-        key: '1',
-        label: 'Month',
-        view: 'dayGridMonth',
-        icon: <Iconify icon="mdi:calendar-month-outline" size={18} />,
+        key: "1",
+        label: "Month",
+        view: "dayGridMonth",
+        icon: <CalendarDays />,
       },
       {
-        key: '2',
-        label: 'Week',
-        view: 'timeGridWeek',
-        icon: <Iconify icon="mdi:calendar-weekend-outline" size={18} />,
+        key: "2",
+        label: "Week",
+        view: "timeGridWeek",
+        icon: <CalendarRange />,
       },
       {
-        key: '3',
-        label: 'Day',
-        view: 'timeGridDay',
-        icon: <Iconify icon="mdi:calendar-today-outline" size={18} />,
+        key: "3",
+        label: "Day",
+        view: "timeGridDay",
+        icon: <Calendar1 />,
       },
       {
-        key: '4',
-        label: 'List',
-        view: 'listWeek',
-        icon: <Iconify icon="mdi:view-agenda-outline" size={18} />,
+        key: "4",
+        label: "List",
+        view: "listWeek",
+        icon: <LayoutList />,
       },
     ],
-    [],
+    []
   );
 
-  const handleMenuClick: MenuProps['onClick'] = (e) => {
-    const selectedViewType = items.find((item) => item.key === e.key)!;
+  const handleMenuClick = (key: string) => {
+    const selectedViewType = items.find((item) => item.key === key)!;
     onViewTypeChange(selectedViewType.view);
   };
 
@@ -65,38 +87,51 @@ export default function CalendarHeader({ now, view, onMove, onCreate, onViewType
       <div className="flex items-center">
         {icon}
         <span className="mx-1 !text-sm font-medium">{label}</span>
-        <Iconify icon="solar:alt-arrow-down-outline" size={20} />
+        <ChevronDown />
       </div>
     );
   };
 
   return (
     <div className="relative flex items-center justify-between py-5">
-      {screenMap.lg && (
-        <Dropdown menu={{ items, onClick: handleMenuClick }}>
-          <Button type="text" size="small">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm">
             {viewTypeMenu(view)}
           </Button>
-        </Dropdown>
-      )}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-[130px]">
+          {items.map((item) => (
+            <DropdownMenuItem
+              key={item.key}
+              onClick={() => handleMenuClick(item.key)}
+            >
+              <div className="flex items-center">
+                {item.icon}
+                <span className="mx-1 !text-sm">{item.label}</span>
+              </div>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <div className="flex cursor-pointer items-center justify-center">
-        <IconButton>
-          <Iconify icon="solar:alt-arrow-left-outline" onClick={() => onMove('prev')} size={20} />
-        </IconButton>
-        <span className="mx-2 text-base font-bold">{dayjs(now).format('DD MMM YYYY')}</span>
-        <IconButton>
-          <Iconify icon="solar:alt-arrow-right-outline" onClick={() => onMove('next')} size={20} />
-        </IconButton>
+        <Button size="icon" variant="ghost" asChild>
+          <ChevronLeft onClick={() => onMove("prev")} />
+        </Button>
+        <span className="mx-2 text-base font-bold">
+          {dayjs(now).format("DD MMM YYYY")}
+        </span>
+        <Button size="icon" variant="ghost" asChild>
+          <ChevronRight onClick={() => onMove("next")} />
+        </Button>
       </div>
 
       <div className="flex items-center">
-        <Button type="primary" onClick={() => onMove('today')}>
-          Today
-        </Button>
-        <Button className="ml-2" type="primary" onClick={() => onCreate()}>
-          <div className=" flex items-center justify-center">
-            <Iconify icon="material-symbols:add" size={24} />
+        <Button onClick={() => onMove("today")}>Today</Button>
+        <Button className="ml-2" onClick={() => onCreate()}>
+          <div className=" flex items-center">
+            <Plus />
             New Event
           </div>
         </Button>
