@@ -1,25 +1,49 @@
 import { ThemeMode } from "../todoList-components/calendar/type";
-import { CSSProperties, memo, useState } from "react";
+import { memo, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import { Task, TaskPriority } from "./type";
-import Color from "color";
+import {
+  ArrowUpWideNarrow,
+  EllipsisVertical,
+  MessageCircleMore,
+  Paperclip,
+  ThumbsUp,
+  Trash2,
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarGroup } from "@/components/ui/avatar-group";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import TaskDetail from "./task-detail";
+import { Image } from "@/components/ui/image";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const SELECTLIST = [
+  { value: "To do", label: "To do" },
+  { value: "In progress", label: "In progress" },
+  { value: "Done", label: "Done" },
+];
 
 type Props = {
   index: number;
   task: Task;
 };
+
 function KanbanTask({ index, task }: Props) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const style: CSSProperties = {
-    backdropFilter: "blur(20px)",
-    backgroundImage: `url("${CyanBlur}"), url("${RedBlur}")`,
-    backgroundRepeat: "no-repeat, no-repeat",
-    backgroundColor: Color(themeToken.colorBgContainer).alpha(0.9).toString(),
-    backgroundPosition: "right top, left bottom",
-    backgroundSize: "50, 50%",
-  };
 
   const {
     id,
@@ -31,114 +55,89 @@ function KanbanTask({ index, task }: Props) {
   } = task;
 
   return (
-    <>
-      <Draggable draggableId={id} index={index}>
-        {(provided, snapshot) => (
-          <Container
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            $isDragging={snapshot.isDragging}
-            $themeMode={ThemeMode.Light}
-          >
-            <div>
-              {attachments.length > 0 && (
-                <Image
-                  src={attachments[0]}
-                  alt=""
-                  className="mb-4 rounded-md"
-                />
-              )}
-              <div onClick={() => setDrawerOpen(true)}>
+    <Draggable draggableId={id} index={index}>
+      {(provided, snapshot) => (
+        <Container
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          $isDragging={snapshot.isDragging}
+          $themeMode={ThemeMode.Light}
+        >
+          <div>
+            {attachments.length > 0 && (
+              <Image src={attachments[0]} alt="" className="mb-4 rounded-md" />
+            )}
+
+            <Drawer onClose={() => setDrawerOpen(false)} open={drawerOpen}>
+              <DrawerTrigger
+                onClick={() => setDrawerOpen(true)}
+                className="w-full"
+              >
                 <div className="flex justify-end">
                   <TaskPrioritySvg taskPriority={priority} />
                 </div>
-                <div>{title}</div>
+                <div className="flex mr-auto">{title}</div>
                 <div className="mt-4 flex items-center justify-between">
                   <div className="flex items-center text-base text-gray-600">
-                    <Iconify
-                      icon="uim:comment-dots"
-                      size={16}
-                      className="mr-1"
-                    />
+                    <MessageCircleMore className="mr-1" size={16} />
                     <span className="text-xs">{comments.length}</span>
 
-                    <Iconify
-                      icon="iconamoon:attachment-bold"
-                      size={16}
-                      className="ml-2 mr-1"
-                    />
+                    <Paperclip className="ml-2 mr-1" size={16} />
                     <span className="text-xs">{attachments.length}</span>
                   </div>
 
                   {assignee?.length && (
-                    <Avatar.Group
-                      maxCount={3}
-                      maxStyle={{
-                        color: themeToken.colorPrimary,
-                        backgroundColor: themeToken.colorPrimaryBg,
-                      }}
-                    >
+                    <AvatarGroup maxCount={3} size="small">
                       {assignee.map((url) => (
-                        <Avatar key={url} src={url} />
+                        <Avatar key={url}>
+                          <AvatarImage src={url} />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
                       ))}
-                    </Avatar.Group>
+                    </AvatarGroup>
                   )}
                 </div>
-              </div>
-            </div>
-          </Container>
-        )}
-      </Draggable>
-      <Drawer
-        placement="right"
-        title={
-          <div className="flex items-center justify-between">
-            <div>
-              <Select
-                defaultValue="To do"
-                size="large"
-                variant="borderless"
-                dropdownStyle={{
-                  width: "auto",
-                }}
-                options={[
-                  { value: "To do", label: "To do" },
-                  { value: "In progress", label: "In progress" },
-                  { value: "Done", label: "Done" },
-                ]}
-              />
-            </div>
-            <div className="flex text-gray">
-              <IconButton>
-                <Iconify
-                  icon="solar:like-bold"
-                  size={20}
-                  color={themeToken.colorSuccess}
-                />
-              </IconButton>
-              <IconButton>
-                <Iconify icon="solar:trash-bin-trash-bold" size={20} />
-              </IconButton>
-              <IconButton>
-                <Iconify icon="fontisto:more-v-a" size={20} />
-              </IconButton>
-            </div>
+              </DrawerTrigger>
+
+              <DrawerContent>
+                <DrawerHeader>
+                  <div className="flex items-center justify-between">
+                    <DrawerTitle>
+                      <Select defaultValue="To do">
+                        <SelectTrigger className="w-[80px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SELECTLIST.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </DrawerTitle>
+                    <div className="flex text-gray">
+                      <Button variant="ghost" size="icon">
+                        <ThumbsUp size={20} color="#59e370" />
+                      </Button>
+                      <Button variant="ghost">
+                        <Trash2 size={20} />
+                      </Button>
+                      <Button variant="ghost">
+                        <EllipsisVertical size={20} />
+                      </Button>
+                    </div>
+                  </div>
+                </DrawerHeader>
+
+                <TaskDetail task={task} />
+              </DrawerContent>
+            </Drawer>
           </div>
-        }
-        onClose={() => setDrawerOpen(false)}
-        open={drawerOpen}
-        closable={false}
-        width={420}
-        styles={{
-          body: { padding: 0 },
-          mask: { backgroundColor: "transparent" },
-        }}
-        style={style}
-      >
-        <TaskDetail task={task} />
-      </Drawer>
-    </>
+        </Container>
+      )}
+    </Draggable>
   );
 }
 
@@ -149,34 +148,18 @@ type TaskPrioritySvgProps = {
   taskPriority: TaskPriority;
 };
 function TaskPrioritySvg({ taskPriority }: TaskPrioritySvgProps) {
-  const { colorSuccess, colorInfo, colorWarning } = useThemeToken();
   switch (taskPriority) {
     case TaskPriority.HIGH:
-      return (
-        <SvgIcon icon="ic_rise" size={20} color={colorWarning} className="" />
-      );
+      return <ArrowUpWideNarrow color="#e3ab4a" />;
     case TaskPriority.MEDIUM:
-      return (
-        <SvgIcon
-          icon="ic_rise"
-          size={20}
-          color={colorSuccess}
-          className="rotate-90"
-        />
-      );
+      return <ArrowUpWideNarrow color="#6abf69" className="rotate-90" />;
     case TaskPriority.LOW:
-      return (
-        <SvgIcon
-          icon="ic_rise"
-          size={20}
-          color={colorInfo}
-          className="rotate-180"
-        />
-      );
+      return <ArrowUpWideNarrow color="#5a8de3" className="rotate-180" />;
     default:
       break;
   }
 }
+
 const Container = styled.div<{ $isDragging: boolean; $themeMode: ThemeMode }>`
   width: 248px;
   border-radius: 12px;

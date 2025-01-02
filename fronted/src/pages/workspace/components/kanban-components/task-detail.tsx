@@ -1,6 +1,13 @@
 import styled from "styled-components";
 import dayjs from "dayjs";
 import { Task } from "./type";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import DatePicker from "@/components/date-picker";
+import { Image } from "@/components/ui/image";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowUpWideNarrow } from "lucide-react";
+import { RadioButtonGroup } from "@/components/ui/radio-button-group";
 
 type Props = {
   task: Task;
@@ -22,89 +29,110 @@ export default function TaskDetail({ task }: Props) {
     <>
       <Container>
         <div className="item">
-          <Typography.Title level={4}>{title}</Typography.Title>
+          <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+            {title}
+          </h4>
         </div>
         <div className="item">
           <div className="label">Reporter</div>
-          <Avatar shape="circle" src={reporter} size={40} />
+          <Avatar>
+            <AvatarImage src={reporter} width={40} />
+            <AvatarFallback>{reporter[0]}</AvatarFallback>
+          </Avatar>
         </div>
         <div className="item">
           <div className="label">Assignee</div>
 
-          <Space>
+          <div className="flex flex-row gap-2">
             {assignee.map((item, index) => (
-              <Avatar key={index} shape="circle" src={item} size={40} />
+              <Avatar key={index}>
+                <AvatarImage src={item} width={40} />
+                <AvatarFallback>{item[0]}</AvatarFallback>
+              </Avatar>
             ))}
-          </Space>
+          </div>
         </div>
         <div className="item">
           <div className="label">Tag</div>
-          <Space wrap>
+          <div className="flex flex-row flex-wrap gap-2">
             {tags.map((tag) => (
-              <ProTag key={tag} color={colorInfo}>
+              <Badge key={tag} className="bg-blue-500">
                 {tag}
-              </ProTag>
+              </Badge>
             ))}
-          </Space>
+          </div>
         </div>
 
         <div className="item">
           <div className="label">Due Date</div>
-          <DatePicker variant="borderless" value={dayjs(date)} />
+          <DatePicker value={dayjs(date)} />
         </div>
 
         <div className="item">
           <div className="label">Priority</div>
           <div>
-            <Radio.Group defaultValue={priority}>
-              <Space>
-                <Radio.Button value="High">
-                  <SvgIcon icon="ic_rise" size={20} color={colorWarning} />
-                  <span>High</span>
-                </Radio.Button>
-
-                <Radio.Button value="Medium">
-                  <SvgIcon
-                    icon="ic_rise"
-                    size={20}
-                    color={colorSuccess}
-                    className="rotate-90"
-                  />
-                  <span>Medium</span>
-                </Radio.Button>
-
-                <Radio.Button value="Low">
-                  <SvgIcon
-                    icon="ic_rise"
-                    size={20}
-                    color={colorInfo}
-                    className="rotate-180"
-                  />
-                  <span>Low</span>
-                </Radio.Button>
-              </Space>
-            </Radio.Group>
+            <RadioButtonGroup
+              name="color"
+              defaultValue={priority}
+              className="flex flex-wrap gap-2"
+              options={[
+                {
+                  value: "High",
+                  label: <span>High</span>,
+                  icon: <ArrowUpWideNarrow color="#e3ab4a" size={20} />,
+                  className:
+                    " data-[state=checked]:bg-red-500 data-[state=checked]:text-white",
+                },
+                {
+                  value: "Medium",
+                  label: <span>Medium</span>,
+                  icon: (
+                    <ArrowUpWideNarrow
+                      color="#6abf69"
+                      size={20}
+                      className="rotate-90"
+                    />
+                  ),
+                  className:
+                    "data-[state=checked]:bg-green-500 data-[state=checked]:text-white",
+                },
+                {
+                  value: "Low",
+                  label: <span>Low</span>,
+                  icon: (
+                    <ArrowUpWideNarrow
+                      color="#5a8de3"
+                      size={20}
+                      className="rotate-180"
+                    />
+                  ),
+                  className:
+                    "data-[state=checked]:bg-blue-500 data-[state=checked]:text-white",
+                },
+              ]}
+            />
           </div>
         </div>
 
         <div className="item">
           <div className="label">Description</div>
-          <Input.TextArea defaultValue={description} />
+          <Textarea defaultValue={description} rows={4} />
         </div>
 
         <div className="item">
           <div className="label">Attachments</div>
-          <Space wrap>
+          <div className="flex flex-row flex-wrap gap-2">
             {attachments?.map((item) => (
               <Image
                 key={item}
                 src={item}
+                alt=""
                 width={62}
                 height={62}
                 className="rounded-lg"
               />
             ))}
-          </Space>
+          </div>
         </div>
       </Container>
       {/* comments */}
@@ -116,13 +144,14 @@ export default function TaskDetail({ task }: Props) {
       >
         {comments?.map(({ avatar, username, content, time }) => (
           <div key={username} className="flex gap-4">
-            <Avatar src={avatar} size={40} className="flex-shrink-0" />
+            <Avatar className="flex-shrink-0">
+              <AvatarImage src={avatar} width={40} />
+              <AvatarFallback>{username[0]}</AvatarFallback>
+            </Avatar>
             <div className="flex flex-grow flex-col flex-wrap gap-1 text-gray">
               <div className="flex justify-between">
-                <Typography.Text>{username}</Typography.Text>
-                <Typography.Text>
-                  {dayjs(time).format("DD/MM/YYYY HH:mm")}
-                </Typography.Text>
+                <span>{username}</span>
+                <span>{dayjs(time).format("DD/MM/YYYY HH:mm")}</span>
               </div>
               <p>{content}</p>
             </div>

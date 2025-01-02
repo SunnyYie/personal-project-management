@@ -25,10 +25,11 @@ import {
   useRouteToMenuFn,
 } from "@/router/routes/util";
 
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useMemo } from "react";
 
 export default function AppSidebar() {
+  const { pathname } = useLocation();
   // 返回路由转为菜单格式的函数
   const routeToMenuFn = useRouteToMenuFn();
   // 获取所有路由
@@ -50,7 +51,11 @@ export default function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuList.map((item) => (
-                <Collapsible key={item.key} asChild defaultOpen={item.isActive}>
+                <Collapsible
+                  key={item.key}
+                  asChild
+                  open={pathname.includes(item.key)}
+                >
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
                       <Link to={item.key}>

@@ -16,7 +16,7 @@ import { faker } from "@faker-js/faker";
 import { useEvent } from "react-use";
 import { Plus } from "lucide-react";
 
-export default function Kanban() {
+export default function KanbanBoard() {
   const [state, setState] = useState(initialData);
 
   // dragtype == task
@@ -274,7 +274,7 @@ export default function Kanban() {
                 e.stopPropagation();
                 setAddingColumn(true);
               }}
-              className="!inline-flex !w-full items-center justify-center !text-xs !font-semibold"
+              className="!inline-flex items-center justify-center !text-xs !font-semibold !w-full"
               size="lg"
               variant="ghost"
             >

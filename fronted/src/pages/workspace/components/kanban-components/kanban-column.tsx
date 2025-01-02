@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Ellipsis, Eraser, Pencil, Plus, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
-  DropdownMenuGroup,
+  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -144,12 +144,12 @@ export default function KanbanColumn({
                 open={dropdownOpen}
                 onOpenChange={(flag) => setDropdownOpen(flag)}
               >
-                <DropdownMenuTrigger>
+                <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="!text-gray">
                     <Ellipsis />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuGroup>
+                <DropdownMenuContent>
                   {items.map((item) => (
                     <DropdownMenuItem
                       key={item.key}
@@ -158,7 +158,7 @@ export default function KanbanColumn({
                       {item.label}
                     </DropdownMenuItem>
                   ))}
-                </DropdownMenuGroup>
+                </DropdownMenuContent>
               </DropdownMenu>
             </header>
 
@@ -190,7 +190,7 @@ export default function KanbanColumn({
                     e.stopPropagation();
                     setAddingTask(true);
                   }}
-                  className="!flex items-center justify-center !text-xs !font-medium"
+                  className="!flex items-center justify-center !text-xs !font-medium w-full"
                   size="lg"
                   variant="ghost"
                 >

@@ -7,7 +7,7 @@ const fakeComment = (count: number): TaskComment[] => {
   for (let index = 0; index < count; index += 1) {
     result.push({
       username: faker.person.fullName(),
-      avatar: faker.image.avatarLegacy(),
+      avatar: faker.image.avatar(),
       content: faker.lorem.lines({ min: 1, max: 3 }),
       time: faker.date.past(),
     });
@@ -26,7 +26,7 @@ const fakeAttachment = (count: number) => {
 const fakeAssignee = (count: number) => {
   const result = [];
   for (let index = 0; index < count; index += 1) {
-    result.push(faker.image.avatarLegacy());
+    result.push(faker.image.avatar());
   }
   return result;
 };
@@ -51,7 +51,7 @@ export const initialData: DndDataType = {
     "task-1": {
       id: "task-1",
       title: faker.lorem.words(3),
-      reporter: faker.image.avatarLegacy(),
+      reporter: faker.image.avatar(),
       priority: TaskPriority.LOW,
       tags: [],
       comments: [],
@@ -60,7 +60,7 @@ export const initialData: DndDataType = {
     "task-2": {
       id: "task-2",
       title: faker.lorem.words(3),
-      reporter: faker.image.avatarLegacy(),
+      reporter: faker.image.avatar(),
       assignee: fakeAssignee(1),
       date: faker.date.future(),
       priority: TaskPriority.HIGH,
@@ -71,7 +71,7 @@ export const initialData: DndDataType = {
     "task-3": {
       id: "task-3",
       title: faker.lorem.words(4),
-      reporter: faker.image.avatarLegacy(),
+      reporter: faker.image.avatar(),
       assignee: fakeAssignee(2),
       priority: TaskPriority.MEDIUM,
       date: faker.date.future(),

@@ -46,6 +46,9 @@ export function useRouteToMenuFn() {
 export const menuFilter = (items: AppRouteObject[]) => {
   return items
     .filter((item) => {
+      const isHide = item.meta?.hideMenu;
+      if (isHide) return false;
+
       const show = item.meta?.key;
 
       if (show && item.children) {

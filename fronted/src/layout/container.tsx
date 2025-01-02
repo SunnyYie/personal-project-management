@@ -25,7 +25,7 @@ export default function MainLayout() {
         <div className="flex flex-col flex-1">
           <Header />
           <LayoutBreadcrumb />
-          <main className="flex-1 px-4 bg-slate-100">
+          <main className="flex-1 px-4">
             <Outlet />
           </main>
         </div>

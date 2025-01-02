@@ -34,9 +34,13 @@ const project: AppRouteObject = {
       meta: { label: projectObj.projectList.name, key: "/project/projectList" },
     },
     {
-      path: "detail",
+      path: "detail/:id",
       element: <ProjectDetail />,
-      meta: { label: projectObj.detail.name, key: "/project/detail" },
+      meta: {
+        label: projectObj.detail.name,
+        key: `/project/detail/:id`,
+        hideMenu: true,
+      },
     },
   ],
 };
