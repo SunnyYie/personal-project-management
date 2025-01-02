@@ -3,8 +3,6 @@ import axios from "axios";
 const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
 const USERNAME = import.meta.env.VITE_USERNAME;
 
-console.log(import.meta.env);
-
 const githubApi = axios.create({
   baseURL: "https://api.github.com",
   headers: {
