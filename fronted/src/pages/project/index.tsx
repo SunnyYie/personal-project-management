@@ -71,7 +71,6 @@ export default function ProjectHome() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Project Management Dashboard</h1>
       <div className="mb-4 flex justify-between items-center">
         <Button onClick={() => setIsAddingProject(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add New Project
@@ -116,7 +115,6 @@ export default function ProjectHome() {
               }
               onCancel={() => {
                 setIsAddingProject(false);
-                setSelectedProject(null);
               }}
             />
           </div>
