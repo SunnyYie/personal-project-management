@@ -1,251 +1,285 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState, useEffect } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Link, useParams } from "react-router";
-import { projects } from "./utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ArrowLeft,
+  Clock,
   GitBranch,
   GitCommit,
   GitPullRequest,
-  Users,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { EnvironmentVariables } from "./components/environment-variables";
-import { DomainManagement } from "./components/domain-management";
-import { DeploymentStatus } from "./components/deployment-status";
+import { Project } from "./types/project.type";
+import { Link, useParams } from "react-router";
+import { projects } from "./utils";
+import { Deployments } from "./detail-components/deployment";
+import { Analytics } from "./detail-components/analytic";
+import { Logs } from "./detail-components/log";
+import { GitOperation } from "./detail-components/git-operation";
 
-export default function ProjectDetails() {
-  const params = useParams();
-  const project = projects.find((p) => p.id === params.id);
-
-  if (!project) {
-    return <div>Project not found</div>;
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Not Started":
-        return "bg-gray-500";
-      case "In Progress":
-        return "bg-blue-500";
-      case "Completed":
-        return "bg-green-500";
-      case "On Hold":
-        return "bg-yellow-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
+function BasicInfo({ project }: { project: Project }) {
   return (
-    <div className="container mx-auto p-4">
-      <Link
-        to="/project/projectList"
-        className="text-blue-500 hover:underline mb-4 inline-flex items-center"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        返回
-      </Link>
-      <h1 className="text-3xl font-bold mb-6">{project.name}</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="col-span-2">
-          <CardHeader>
-            <CardTitle>Project Overview</CardTitle>
+    <div className="space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold">{project.name}</h1>
+          <p className="text-muted-foreground">{project.description}</p>
+        </div>
+        <Badge
+          variant={project.status === "Completed" ? "default" : "secondary"}
+        >
+          {project.status}
+        </Badge>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Progress</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="text-sm font-medium mb-1">Status</div>
-                <div className="flex items-center space-x-2">
-                  <Badge className={getStatusColor(project.status)}>
-                    {project.status}
-                  </Badge>
-                  <Progress value={project.progress} className="w-full" />
-                  <span className="text-sm font-medium">
-                    {project.progress}%
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className="text-sm font-medium mb-1">Description</div>
-                <p className="text-sm text-muted-foreground">
-                  {project.description}
-                </p>
-              </div>
-              <div>
-                <div className="text-sm font-medium mb-1">Date Range</div>
-                <p className="text-sm text-muted-foreground">
-                  {project.startDate} - {project.endDate}
-                </p>
-              </div>
-              <div>
-                <div className="text-sm font-medium mb-1">Tasks</div>
-                <p className="text-sm text-muted-foreground">
-                  {project.tasks.completed} / {project.tasks.total} completed
-                </p>
-              </div>
-              <div>
-                <div className="text-sm font-medium mb-1">Framework</div>
-                <p className="text-sm text-muted-foreground">
-                  {project.framework}
-                </p>
-              </div>
-              <div>
-                <div className="text-sm font-medium mb-1">Project Link</div>
-                <Link
-                  to={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-500 hover:underline"
-                >
-                  {project.link}
-                </Link>
-              </div>
+            <div className="text-2xl font-bold">{project.progress}%</div>
+            <Progress value={project.progress} className="mt-2" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Budget</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ${project.budget.toLocaleString()}
             </div>
           </CardContent>
         </Card>
-
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Tasks</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {project.tasks.completed}/{project.tasks.total}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Team Size</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{project.members.length}</div>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Project Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex justify-between">
+              <span className="font-medium">Client:</span>
+              <span>{project.client}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">Start Date:</span>
+              <span>{project.startDate}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">End Date:</span>
+              <span>{project.endDate}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">Framework:</span>
+              <span>{project.framework}</span>
+            </div>
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle>Team Members</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
               {project.members.map((member) => (
-                <div key={member.id} className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src={member.avatar} alt={member.name} />
-                    <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-medium">{member.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      Team Member
-                    </div>
-                  </div>
-                </div>
+                <Avatar key={member.id} title={member.name}>
+                  <AvatarImage src={member.avatar} alt={member.name} />
+                  <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                </Avatar>
               ))}
             </div>
           </CardContent>
         </Card>
-
-        <Card className="col-span-2">
-          <CardHeader>
-            <CardTitle>Recent Activities</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {project.recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-4">
-                  <Avatar>
-                    <AvatarImage
-                      src={activity.user.avatar}
-                      alt={activity.user.name}
-                    />
-                    <AvatarFallback>
-                      {activity.user.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">{activity.user.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {activity.action}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(activity.timestamp).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
         <Card>
           <CardHeader>
-            <CardTitle>Latest Deployment</CardTitle>
+            <CardTitle>Latest Code Operation</CardTitle>
           </CardHeader>
           <CardContent>
-            <DeploymentStatus deployment={project.latestDeployment} />
-            <div className="mt-4">
-              <Link
-                to={project.latestDeployment.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-blue-500 hover:underline"
-              >
-                View Deployment
-              </Link>
+            <div className="flex items-center space-x-2">
+              {project.latestCodeOperation.type === "commit" && (
+                <GitCommit className="h-4 w-4" />
+              )}
+              {project.latestCodeOperation.type === "pull_request" && (
+                <GitPullRequest className="h-4 w-4" />
+              )}
+              {project.latestCodeOperation.type === "branch" && (
+                <GitBranch className="h-4 w-4" />
+              )}
+              <span className="font-medium">
+                {project.latestCodeOperation.title}
+              </span>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Environment Variables</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <EnvironmentVariables
-              variables={project.environmentVariables}
-              onAdd={() => {}}
-              onDelete={() => {}}
-            />
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Domains</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DomainManagement
-              domains={project.domains}
-              onAdd={() => {}}
-              onDelete={() => {}}
-            />
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Project Statistics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="flex items-center space-x-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Team Size</p>
-                  <p className="text-2xl font-bold">{project.members.length}</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <GitCommit className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Commits</p>
-                  <p className="text-2xl font-bold">152</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <GitPullRequest className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Pull Requests</p>
-                  <p className="text-2xl font-bold">32</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <GitBranch className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Active Branches</p>
-                  <p className="text-2xl font-bold">5</p>
-                </div>
-              </div>
+            <div className="text-sm text-muted-foreground mt-1">
+              by {project.latestCodeOperation.author} on{" "}
+              {project.latestCodeOperation.date}
             </div>
           </CardContent>
         </Card>
       </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Domains</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {project.domains.map((domain) => (
+              <div
+                key={domain.name}
+                className="flex items-center justify-between"
+              >
+                <span>{domain.name}</span>
+                <Badge
+                  variant={domain.status === "Active" ? "default" : "secondary"}
+                >
+                  {domain.status}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function Database() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Database</h2>
+      <p>
+        Database information will be displayed here, similar to Vercel's
+        interface.
+      </p>
+    </div>
+  );
+}
+
+function Configuration() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Configuration</h2>
+      <p>
+        Project configuration, including environment variables, will be managed
+        here.
+      </p>
+    </div>
+  );
+}
+
+export default function ProjectDetails() {
+  const params = useParams();
+  const [project, setProject] = useState<Project | null>(null);
+
+  useEffect(() => {
+    const fetchedProject = projects.find((p) => p.id === params.id);
+    setProject(fetchedProject || null);
+  }, [params.id]);
+
+  if (!project) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="container mx-auto py-10">
+      <Link to="/project/projectList" className="text-blue-600">
+        <ArrowLeft className="h-4 w-4 inline-block -mt-1 mr-1" />
+        Back to Projects
+      </Link>
+      <Tabs defaultValue="basic-info" className="space-y-4 mt-4">
+        <TabsList>
+          <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
+          <TabsTrigger value="deployments">Deployments</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="logs">Logs</TabsTrigger>
+          <TabsTrigger value="database">Database</TabsTrigger>
+          <TabsTrigger value="git-operations">Git Operations</TabsTrigger>
+          <TabsTrigger value="configuration">Configuration</TabsTrigger>
+        </TabsList>
+        <TabsContent value="basic-info">
+          <BasicInfo project={project} />
+        </TabsContent>
+        <TabsContent value="deployments">
+          <Deployments projectId={project.id} />
+        </TabsContent>
+        <TabsContent value="analytics">
+          <Analytics projectId={project.id} />
+        </TabsContent>
+        <TabsContent value="logs">
+          <Logs projectId={project.id} />
+        </TabsContent>
+        <TabsContent value="database">
+          <Database />
+        </TabsContent>
+        <TabsContent value="git-operations">
+          <GitOperation
+            owner={project.repository.split("/")[0]}
+            repo={project.repository.split("/")[1]}
+          />
+        </TabsContent>
+        <TabsContent value="configuration">
+          <Configuration />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

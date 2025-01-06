@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { EnvironmentVariable } from "../project.type";
+import { EnvironmentVariable } from "../types/project.type";
 
 interface EnvironmentVariablesProps {
   variables: EnvironmentVariable[];

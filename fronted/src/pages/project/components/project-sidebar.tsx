@@ -6,7 +6,7 @@ import { DeploymentStatus } from "./deployment-status";
 import { EnvironmentVariables } from "./environment-variables";
 import { DomainManagement } from "./domain-management";
 import { Badge } from "@/components/ui/badge";
-import { Project } from "../project.type";
+import { Project } from "../types/project.type";
 
 interface ProjectSidebarProps {
   project: Project | null;

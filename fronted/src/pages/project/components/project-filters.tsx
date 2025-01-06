@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProjectStatus } from "../project.type";
+import { ProjectStatus } from "../types/project.type";
 
 interface ProjectFiltersProps {
   searchTerm: string;

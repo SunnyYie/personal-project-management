@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Deployment } from "../project.type";
+import { Deployment } from "../types/project.type";
 
 interface DeploymentStatusProps {
   deployment: Deployment;

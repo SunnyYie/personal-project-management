@@ -9,6 +9,7 @@ import { Suspense, lazy } from "react";
 
 const ProjectDetail = lazy(() => import("@/pages/project/detail"));
 const ProjectList = lazy(() => import("@/pages/project/index"));
+const FileList = lazy(() => import("@/pages/project/file-list"));
 
 const project: AppRouteObject = {
   order: 2,
@@ -40,6 +41,14 @@ const project: AppRouteObject = {
         label: projectObj.detail.name,
         key: `/project/detail/:id`,
         hideMenu: true,
+      },
+    },
+    {
+      path: "file",
+      element: <FileList />,
+      meta: {
+        label: projectObj.file.name,
+        key: "/project/file",
       },
     },
   ],

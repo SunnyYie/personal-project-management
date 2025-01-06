@@ -8,6 +8,8 @@ export type DeploymentStatus = "Deployed" | "Building" | "Failed" | "Cancelled";
 export interface Member {
   id: string;
   name: string;
+  email: string;
+  role: string;
   avatar: string;
 }
 
@@ -35,6 +37,21 @@ export interface Activity {
   timestamp: string;
 }
 
+export interface Document {
+  id: string;
+  name: string;
+  url: string;
+  type: "pdf" | "doc" | "sheet" | "other";
+}
+
+export interface CodeOperation {
+  id: string;
+  type: "commit" | "pull_request" | "branch";
+  title: string;
+  author: string;
+  date: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -51,4 +68,9 @@ export interface Project {
   domains: Domain[];
   framework: string;
   recentActivities: Activity[];
+  documents: Document[];
+  budget: number;
+  client: string;
+  repository: string;
+  latestCodeOperation: CodeOperation;
 }

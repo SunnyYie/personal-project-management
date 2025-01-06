@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
-import { Project } from "../project.type";
+import { Project } from "../types/project.type";
 import { Link } from "react-router";
 
 interface ProjectCardProps {
@@ -52,12 +52,17 @@ export function ProjectCard({ project, onSelect }: ProjectCardProps) {
         <Progress value={project.progress} className="mb-4" />
         <div className="flex justify-between items-center mb-4">
           <div className="flex -space-x-2">
-            {project.members.map((member) => (
+            {project.members.slice(0, 3).map((member) => (
               <Avatar key={member.id} className="border-2 border-background">
                 <AvatarImage src={member.avatar} alt={member.name} />
                 <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
               </Avatar>
             ))}
+            {project.members.length > 3 && (
+              <Avatar className="border-2 border-background">
+                <AvatarFallback>+{project.members.length - 3}</AvatarFallback>
+              </Avatar>
+            )}
           </div>
           <Link
             to={project.link}

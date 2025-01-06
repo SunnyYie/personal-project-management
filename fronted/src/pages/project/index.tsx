@@ -1,4 +1,4 @@
-import { Project, ProjectStatus } from "./project.type";
+import { Project, ProjectStatus } from "./types/project.type";
 import { projects as initialProjects } from "./utils";
 import { useState } from "react";
 
@@ -24,7 +24,6 @@ export default function ProjectHome() {
     const projectToAdd = {
       ...newProject,
       id: (projects.length + 1).toString(),
-      members: [],
       tasks: { completed: 0, total: 0 },
       latestDeployment: {
         id: "1",
@@ -34,7 +33,6 @@ export default function ProjectHome() {
       },
       environmentVariables: [],
       domains: [],
-      framework: "Next.js",
       recentActivities: [],
     } as Project;
     setProjects([...projects, projectToAdd]);
@@ -104,7 +102,7 @@ export default function ProjectHome() {
       )}
       {isAddingProject && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md">
+          <div className="bg-white p-6 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">
               {selectedProject ? "Edit Project" : "Add New Project"}
             </h2>
