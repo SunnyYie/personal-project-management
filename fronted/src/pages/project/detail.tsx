@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Clock, GitCommit } from "lucide-react";
-import { Project, ProjectStatusEnum } from "./types/project.type";
-import { Link, useParams } from "react-router";
-import { Deployments } from "./detail-components/deployment";
-import { Analytics } from "./detail-components/analytic";
-import { Logs } from "./detail-components/log";
-import { GitOperation } from "./detail-components/git-operation";
-import { getCommits, getRepository } from "@/api/actions/github";
-import { getProjects } from "@/api/actions/vercel";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ArrowLeft, Clock, GitCommit } from 'lucide-react'
+import { Project, ProjectStatusEnum } from './types/project.type'
+import { Link, useParams } from 'react-router'
+import { Deployments } from './detail-components/deployment'
+import { Analytics } from './detail-components/analytic'
+import { Logs } from './detail-components/log'
+import { GitOperation } from './detail-components/git-operation'
+import { getCommits, getRepository } from '@/api/actions/github'
+import { getProjects } from '@/api/actions/vercel'
+import { Input } from '@/components/ui/input'
 
 function BasicInfo({ project }: { project: any }) {
   return (
@@ -21,9 +21,7 @@ function BasicInfo({ project }: { project: any }) {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold mb-1">{project.name}</h1>
-          <p className="text-muted-foreground">
-            {project.description || "暂无描述"}
-          </p>
+          <p className="text-muted-foreground">{project.description || '暂无描述'}</p>
         </div>
         <Badge variant="default" className="bg-blue-500">
           {project.status}
@@ -57,17 +55,13 @@ function BasicInfo({ project }: { project: any }) {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              ${project.budget?.toLocaleString() || 0}
-            </div>
+            <div className="text-2xl font-bold">${project.budget?.toLocaleString() || 0}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              已完成任务数/任务总数
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">已完成任务数/任务总数</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -106,9 +100,7 @@ function BasicInfo({ project }: { project: any }) {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {project.members?.length || 0}
-            </div>
+            <div className="text-2xl font-bold">{project.members?.length || 0}</div>
           </CardContent>
         </Card>
       </div>
@@ -120,9 +112,7 @@ function BasicInfo({ project }: { project: any }) {
           <CardContent className="space-y-2">
             <div className="flex justify-between">
               <span className="font-medium">开始时间:</span>
-              <span>
-                {new Date(project.created_at).toLocaleString("zh-cn")}
-              </span>
+              <span>{new Date(project.created_at).toLocaleString('zh-cn')}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-medium">结束时间:</span>
@@ -201,24 +191,16 @@ function BasicInfo({ project }: { project: any }) {
             <div className="flex flex-col">
               {project.githubCommits?.slice(0, 5)?.map((commit: any) => {
                 return (
-                  <div
-                    key={commit.sha}
-                    className="flex items-center space-x-2 mb-1"
-                  >
+                  <div key={commit.sha} className="flex items-center space-x-2 mb-1">
                     <GitCommit className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <div className="text-sm font-medium">
-                        {commit.commit.message}
-                      </div>
+                      <div className="text-sm font-medium">{commit.commit.message}</div>
                       <div className="text-sm text-muted-foreground">
-                        {commit.commit.author.name} on{" "}
-                        {new Date(commit.commit.author.date).toLocaleString(
-                          "zh-cn"
-                        )}
+                        {commit.commit.author.name} on {new Date(commit.commit.author.date).toLocaleString('zh-cn')}
                       </div>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           </CardContent>
@@ -231,10 +213,7 @@ function BasicInfo({ project }: { project: any }) {
         <CardContent>
           <div className="space-y-2">
             {project.vercelProject.env?.map((env: any) => (
-              <div
-                key={env.id}
-                className="flex items-center justify-between space-x-2"
-              >
+              <div key={env.id} className="flex items-center justify-between space-x-2">
                 <Input placeholder="Key" value={env.key} disabled />
                 <Input placeholder="Value" value={env.value} disabled />
               </div>
@@ -249,71 +228,56 @@ function BasicInfo({ project }: { project: any }) {
         <CardContent>
           <div className="space-y-2">
             {project.domains?.map((domain: any) => (
-              <div
-                key={domain.name}
-                className="flex items-center justify-between"
-              >
+              <div key={domain.name} className="flex items-center justify-between">
                 <span>{domain.name}</span>
-                <Badge
-                  variant={domain.status === "Active" ? "default" : "secondary"}
-                >
-                  {domain.status}
-                </Badge>
+                <Badge variant={domain.status === 'Active' ? 'default' : 'secondary'}>{domain.status}</Badge>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 function Database() {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Database</h2>
-      <p>
-        Database information will be displayed here, similar to Vercel's
-        interface.
-      </p>
+      <p>Database information will be displayed here, similar to Vercel's interface.</p>
     </div>
-  );
+  )
 }
 
 function Configuration() {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Configuration</h2>
-      <p>
-        Project configuration, including environment variables, will be managed
-        here.
-      </p>
+      <p>Project configuration, including environment variables, will be managed here.</p>
     </div>
-  );
+  )
 }
 
 export default function ProjectDetails() {
-  const params = useParams();
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
+  const params = useParams()
+  const [project, setProject] = useState<Project | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
-      const USERNAME = import.meta.env.VITE_USERNAME;
+      const USERNAME = import.meta.env.VITE_USERNAME
 
       try {
-        const projectId = params.id;
-        if (!projectId) return;
+        const projectId = params.id
+        if (!projectId) return
 
         // 获取 GitHub 项目
-        const githubProject = await getRepository(projectId);
-        const githubCommits = await getCommits(USERNAME, projectId);
+        const githubProject = await getRepository(projectId)
+        const githubCommits = await getCommits(USERNAME, projectId)
 
         // 获取 Vercel 项目
-        const projects = await getProjects();
-        const vercelProject = projects.find(
-          (vercelProject: any) => vercelProject.link.repo === githubProject.name
-        );
+        const projects = await getProjects()
+        const vercelProject = projects.find((vercelProject: any) => vercelProject.link.repo === githubProject.name)
 
         // 拼接项目数据
         const combinedProject = {
@@ -322,33 +286,33 @@ export default function ProjectDetails() {
           vercelProject,
           status: ProjectStatusEnum.InProgress,
           progress: 0,
-          framework: "React",
+          framework: 'React',
           members: [
             {
               ...githubProject.owner,
-              role: "admin",
+              role: 'admin',
             },
           ],
-        };
-        console.log(combinedProject, "com");
+        }
+        console.log(combinedProject, 'com')
 
-        setProject(combinedProject);
+        setProject(combinedProject)
       } catch (error) {
-        console.error("Error fetching project details:", error);
+        console.error('Error fetching project details:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchProjectDetails();
-  }, [params.id]);
+    fetchProjectDetails()
+  }, [params.id])
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   if (!project) {
-    return <div>Project not found</div>;
+    return <div>Project not found</div>
   }
 
   return (
@@ -374,24 +338,21 @@ export default function ProjectDetails() {
           <Deployments project={project} />
         </TabsContent>
         <TabsContent value="analytics">
-          <Analytics projectId={project.id} />
+          <Analytics project={project} />
         </TabsContent>
         <TabsContent value="logs">
-          <Logs projectId={project.id} />
+          <Logs project={project} />
         </TabsContent>
         <TabsContent value="database">
           <Database />
         </TabsContent>
-        {/* <TabsContent value="git-operations">
-          <GitOperation
-            owner={project.repository.split("/")[0]}
-            repo={project.repository.split("/")[1]}
-          />
-        </TabsContent> */}
+        <TabsContent value="git-operations">
+          <GitOperation commits={project} />
+        </TabsContent>
         <TabsContent value="configuration">
           <Configuration />
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }
