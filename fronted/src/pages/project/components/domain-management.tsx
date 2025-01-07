@@ -5,9 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Domain } from "../types/project.type";
 
 interface DomainManagementProps {
-  domains: Domain[];
-  onAdd: (domain: Domain) => void;
-  onDelete: (name: string) => void;
+  domains?: Domain[];
+  onAdd?: (domain: Domain) => void;
+  onDelete?: (name: string) => void;
 }
 
 export function DomainManagement({
@@ -19,7 +19,7 @@ export function DomainManagement({
 
   const handleAdd = () => {
     if (newDomain) {
-      onAdd({ name: newDomain, status: "Pending" });
+      onAdd && onAdd({ name: newDomain, status: "Pending" });
       setNewDomain("");
     }
   };
@@ -40,7 +40,7 @@ export function DomainManagement({
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Domains</h3>
-      {domains.map((domain) => (
+      {domains?.map((domain) => (
         <div key={domain.name} className="flex items-center justify-between">
           <span>{domain.name}</span>
           <div className="flex items-center space-x-2">
@@ -50,7 +50,7 @@ export function DomainManagement({
             <Button
               variant="destructive"
               size="sm"
-              onClick={() => onDelete(domain.name)}
+              onClick={() => onDelete && onDelete(domain.name)}
             >
               Delete
             </Button>
@@ -63,7 +63,7 @@ export function DomainManagement({
           value={newDomain}
           onChange={(e) => setNewDomain(e.target.value)}
         />
-        <Button onClick={handleAdd}>Add</Button>
+        <Button disabled>添加</Button>
       </div>
     </div>
   );

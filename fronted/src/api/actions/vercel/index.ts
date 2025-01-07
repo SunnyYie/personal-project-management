@@ -10,6 +10,16 @@ const vercelApi = axios.create({
   },
 });
 
+export const getVercelProject = async (projectName: string) => {
+  try {
+    const response = await vercelApi.get(`/v1/projects/${projectName}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    return [];
+  }
+};
+
 export async function getProjects() {
   try {
     const response = await vercelApi.get(

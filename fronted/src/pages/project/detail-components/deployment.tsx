@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,24 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
-interface Deployment {
-  uid: string;
-  name: string;
-  url: string;
-  created: number;
-  state: "READY" | "ERROR" | "BUILDING" | "CANCELED";
-  meta: {
-    branch: string;
-  };
-}
-
 interface DeploymentsProps {
-  projectId: string;
+  project: any;
 }
 
-export function Deployments({ projectId }: DeploymentsProps) {
-  const [deployments, setDeployments] = useState<Deployment[]>([]);
-  const [loading, setLoading] = useState(true);
+export function Deployments({ project }: DeploymentsProps) {
   const [branch, setBranch] = useState("");
   const [deploying, setDeploying] = useState(false);
 
@@ -39,64 +26,34 @@ export function Deployments({ projectId }: DeploymentsProps) {
   //   fetchDeployments();
   // }, [projectId]);
 
-  const fetchDeployments = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/vercel?projectId=${projectId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch deployments");
-      }
-      const data = await response.json();
-      setDeployments(data.deployments);
-    } catch (error) {
-      console.error("Error fetching deployments:", error);
-      toast.error("Failed to fetch deployments. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeploy = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setDeploying(true);
-    try {
-      const response = await fetch("/api/vercel", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ projectId, branch }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to create deployment");
-      }
-      toast.success("Deployment created successfully.");
-      fetchDeployments();
-      setBranch("");
-    } catch (error) {
-      console.error("Error creating deployment:", error);
-      toast.error("Failed to create deployment. Please try again.");
-    } finally {
-      setDeploying(false);
-    }
-  };
-
-  const getStatusIcon = (state: Deployment["state"]) => {
-    switch (state) {
-      case "READY":
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case "ERROR":
-        return <XCircle className="h-5 w-5 text-red-500" />;
-      case "BUILDING":
-        return <Clock className="h-5 w-5 text-yellow-500" />;
-      case "CANCELED":
-        return <AlertCircle className="h-5 w-5 text-gray-500" />;
-    }
-  };
+  // const handleDeploy = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setDeploying(true);
+  //   try {
+  //     const response = await fetch("/api/vercel", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ projectId, branch }),
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Failed to create deployment");
+  //     }
+  //     toast.success("Deployment created successfully.");
+  //     fetchDeployments();
+  //     setBranch("");
+  //   } catch (error) {
+  //     console.error("Error creating deployment:", error);
+  //     toast.error("Failed to create deployment. Please try again.");
+  //   } finally {
+  //     setDeploying(false);
+  //   }
+  // };
 
   return (
     <div className="space-y-6">
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Create New Deployment</CardTitle>
           <CardDescription>
@@ -120,7 +77,7 @@ export function Deployments({ projectId }: DeploymentsProps) {
             </Button>
           </form>
         </CardContent>
-      </Card>
+      </Card> */}
 
       <Card>
         <CardHeader>
@@ -130,13 +87,11 @@ export function Deployments({ projectId }: DeploymentsProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <p>Loading deployments...</p>
-          ) : deployments.length === 0 ? (
+          {!project.vercelProject ? (
             <p>No deployments found.</p>
           ) : (
             <div className="space-y-4">
-              {deployments.map((deployment) => (
+              {/* {deployments.map((deployment) => (
                 <Card key={deployment.uid}>
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
@@ -179,7 +134,7 @@ export function Deployments({ projectId }: DeploymentsProps) {
                     </Button>
                   </CardFooter>
                 </Card>
-              ))}
+              ))} */}
             </div>
           )}
         </CardContent>

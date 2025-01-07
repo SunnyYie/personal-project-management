@@ -4,39 +4,25 @@ import { Input } from "@/components/ui/input";
 import { EnvironmentVariable } from "../types/project.type";
 
 interface EnvironmentVariablesProps {
-  variables: EnvironmentVariable[];
-  onAdd: (variable: EnvironmentVariable) => void;
-  onDelete: (key: string) => void;
+  variables?: EnvironmentVariable[];
 }
 
-export function EnvironmentVariables({
-  variables,
-  onAdd,
-  onDelete,
-}: EnvironmentVariablesProps) {
+export function EnvironmentVariables({ variables }: EnvironmentVariablesProps) {
   const [newKey, setNewKey] = useState("");
   const [newValue, setNewValue] = useState("");
 
-  const handleAdd = () => {
-    if (newKey && newValue) {
-      onAdd({ key: newKey, value: newValue });
-      setNewKey("");
-      setNewValue("");
-    }
-  };
-
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Environment Variables</h3>
-      {variables.map((variable) => (
-        <div key={variable.key} className="flex items-center justify-between">
-          <span>{variable.key}</span>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => onDelete(variable.key)}
-          >
-            Delete
+      <h3 className="text-lg font-semibold">环境变量</h3>
+      {variables?.map((variable) => (
+        <div
+          key={variable.id}
+          className="flex items-center justify-between space-x-2"
+        >
+          <Input placeholder="Key" value={variable.key} disabled />
+          <Input placeholder="Value" value={variable.value} disabled />
+          <Button variant="destructive" size="sm" disabled>
+            删除
           </Button>
         </div>
       ))}
@@ -51,7 +37,7 @@ export function EnvironmentVariables({
           value={newValue}
           onChange={(e) => setNewValue(e.target.value)}
         />
-        <Button onClick={handleAdd}>Add</Button>
+        <Button disabled>添加</Button>
       </div>
     </div>
   );

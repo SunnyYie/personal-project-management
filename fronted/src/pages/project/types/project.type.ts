@@ -1,26 +1,41 @@
 export type ProjectStatus =
-  | "Not Started"
-  | "In Progress"
+  | "NotStarted"
+  | "InProgress"
   | "Completed"
-  | "On Hold";
+  | "OnHold";
+export enum ProjectStatusEnum {
+  All = "全部状态",
+  NotStarted = "未开始",
+  InProgress = "进行中",
+  Completed = "已完成",
+  OnHold = "暂停",
+}
 export type DeploymentStatus = "Deployed" | "Building" | "Failed" | "Cancelled";
+export enum DeploymentStatusEnum {
+  Deployed = "已部署",
+  Building = "构建中",
+  Failed = "失败",
+  Cancelled = "已取消",
+}
 
 export interface Member {
   id: string;
-  name: string;
+  login: string;
   email: string;
   role: string;
-  avatar: string;
+  avatar_url: string;
 }
 
 export interface Deployment {
   id: string;
-  status: DeploymentStatus;
+  status?: DeploymentStatusEnum;
   createdAt: string;
+  updatedAt: string;
   url: string;
 }
 
 export interface EnvironmentVariable {
+  id: string;
   key: string;
   value: string;
 }
@@ -33,8 +48,8 @@ export interface Domain {
 export interface Activity {
   id: string;
   user: Member;
-  action: string;
-  timestamp: string;
+  message: string;
+  date: string;
 }
 
 export interface Document {
@@ -46,31 +61,35 @@ export interface Document {
 
 export interface CodeOperation {
   id: string;
-  type: "commit" | "pull_request" | "branch";
-  title: string;
-  author: string;
-  date: string;
+  type: string;
+  message: string;
+  author: {
+    name: string;
+    date: string;
+  };
 }
 
 export interface Project {
   id: string;
   name: string;
-  status: ProjectStatus;
+  status: ProjectStatusEnum;
   progress: number;
-  members: Member[];
-  link: string;
+  members?: Member[];
+  html_url: string;
   description: string;
-  startDate: string;
+  created_at: string;
   endDate: string;
-  tasks: { completed: number; total: number };
-  latestDeployment: Deployment;
-  environmentVariables: EnvironmentVariable[];
-  domains: Domain[];
+  tasks?: { completed: number; total: number };
+  latestDeployment?: Deployment;
+  environmentVariables?: EnvironmentVariable[];
+  domains?: Domain[];
+  // 技术栈
   framework: string;
-  recentActivities: Activity[];
-  documents: Document[];
-  budget: number;
-  client: string;
-  repository: string;
-  latestCodeOperation: CodeOperation;
+  recentActivities?: Activity[];
+  documents?: Document[];
+  budget?: number;
+  client?: string;
+  repository?: string;
+  latestCodeOperation?: CodeOperation;
+  vercelProject?: any;
 }

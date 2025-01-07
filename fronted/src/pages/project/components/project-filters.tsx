@@ -6,15 +6,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProjectStatus } from "../types/project.type";
+import { ProjectStatusEnum } from "../types/project.type";
 
 interface ProjectFiltersProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  statusFilter: ProjectStatus | "All";
-  onStatusFilterChange: (value: ProjectStatus | "All") => void;
-  sortBy: "name" | "status" | "progress";
-  onSortChange: (value: "name" | "status" | "progress") => void;
+  statusFilter: ProjectStatusEnum;
+  onStatusFilterChange: (value: ProjectStatusEnum) => void;
 }
 
 export function ProjectFilters({
@@ -22,8 +20,6 @@ export function ProjectFilters({
   onSearchChange,
   statusFilter,
   onStatusFilterChange,
-  sortBy,
-  onSortChange,
 }: ProjectFiltersProps) {
   return (
     <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -32,26 +28,16 @@ export function ProjectFilters({
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="All">All Statuses</SelectItem>
-          <SelectItem value="Not Started">Not Started</SelectItem>
-          <SelectItem value="In Progress">In Progress</SelectItem>
-          <SelectItem value="Completed">Completed</SelectItem>
-          <SelectItem value="On Hold">On Hold</SelectItem>
-        </SelectContent>
-      </Select>
-      <Select value={sortBy} onValueChange={onSortChange}>
-        <SelectTrigger className="md:w-1/4">
-          <SelectValue placeholder="Sort by" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="name">Name</SelectItem>
-          <SelectItem value="status">Status</SelectItem>
-          <SelectItem value="progress">Progress</SelectItem>
+          <SelectItem value={ProjectStatusEnum.All}>全部状态</SelectItem>
+          <SelectItem value={ProjectStatusEnum.NotStarted}>未开始</SelectItem>
+          <SelectItem value={ProjectStatusEnum.InProgress}>进行中</SelectItem>
+          <SelectItem value={ProjectStatusEnum.Completed}>已完成</SelectItem>
+          <SelectItem value={ProjectStatusEnum.OnHold}>已暂停</SelectItem>
         </SelectContent>
       </Select>
 
       <Input
-        placeholder="Search projects..."
+        placeholder="搜索项目名"
         value={searchTerm}
         onChange={(e) => onSearchChange(e.target.value)}
         className="md:w-1/3"
