@@ -1,27 +1,42 @@
-import { FileItem } from "@/components/file-components/type";
-import FileUpload from "@/components/file-components/upload";
-import FileList from "@/components/file-components/list";
-import { useState } from "react";
+import { FileItem } from '@/components/file-components/type'
+import FileUpload from '@/components/file-components/upload'
+import FileList from '@/components/file-components/list'
+import { useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import fileService from '@/api/file/fileService'
 
 interface FileProps {
-  projectId: string;
+  projectId: string
 }
 
 export default function File({ projectId }: FileProps) {
-  const [files, setFiles] = useState<FileItem[]>([]);
+  const [files, setFiles] = useState<FileItem[]>([])
+
+  const fileMutation = useMutation({
+    mutationFn: fileService.uploadFile,
+  })
 
   const fetchFiles = async () => {
     // const { data } = await axios.get(`/api/projects/${projectId}/files`);
     // setFiles(data);
-  };
+  }
 
-  const handleFileUpload = (newFiles: FileItem[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-  };
+  const handleFileUpload = async (newFiles: FileItem[]) => {
+    console.log(newFiles)
+
+    const res = await fileMutation.mutateAsync({
+      filename: newFiles[0].name,
+      size: newFiles[0].size,
+    })
+
+    console.log(res)
+
+    setFiles(prevFiles => [...prevFiles, ...newFiles])
+  }
 
   const handleFileDelete = (id: string) => {
-    setFiles((prevFiles) => prevFiles.filter((file) => file.id !== id));
-  };
+    setFiles(prevFiles => prevFiles.filter(file => file.id !== id))
+  }
 
   return (
     <div className="container">
@@ -31,5 +46,5 @@ export default function File({ projectId }: FileProps) {
         <FileList files={files} onDelete={handleFileDelete} />
       </div>
     </div>
-  );
+  )
 }

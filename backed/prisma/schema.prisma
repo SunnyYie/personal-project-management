@@ -58,3 +58,12 @@ model OperationLog {
 
   user User? @relation(fields: [userId], references: [id])
 }
+
+model File {
+  id        String   @id @default(cuid())
+  filename  String
+  path      String?
+  mimetype  String?
+  size      Int
+  createdAt DateTime @default(now())
+}
