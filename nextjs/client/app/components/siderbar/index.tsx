@@ -25,6 +25,11 @@ import { TeamSwitcher } from "./team-switcher";
 import { NavProjects } from "./nav-projects";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
+import { Project } from "@prisma/client";
+
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  // projects: Project[];
+}
 
 const data = {
   user: {
@@ -155,7 +160,7 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

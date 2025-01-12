@@ -11,7 +11,7 @@ import {
 
 export function LayoutBreadcrumb() {
   return (
-    <Breadcrumb className="bg-gray-100 px-4 py-2">
+    <Breadcrumb className="bg-gray-100 px-4 py-2 dark:bg-gray-800 dark:text-gray-200">
       <BreadcrumbList>
         {/* {pathname.split("/").map((path, index) => {
           if (path === "") {

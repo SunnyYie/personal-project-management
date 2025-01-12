@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model File {
+  id        String   @id @default(cuid())
+  filename  String
+  path      String?
+  mimetype  String?
+  size      Int
+  createdAt DateTime @default(now())
+}
+
+model OperationLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  email     String?
+  ip        String
+  method    String
+  path      String
+  params    Json?
+  userAgent String
+  device    String?
+  platform  String?
+  status    Int
+  response  Json?
+  duration  Int
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id        String  @id @default(cuid())
+  // Amazon Cognito 服务中用户的唯一标识符
+  cognitoId String  @unique
+  // 团队ID
+  teamId    String  @unique
+  email     String  @unique
+  name      String?
+  avatar    String?
+  role      Role    @default(USER)
+
+  password String
+
+  // 用户创建的任务
+  authoredTasks  Task[]           @relation("TaskAuthor")
+  // 用户被分配的任务
+  assignedTasks  Task[]           @relation("TaskAssignee")
+  // 用户创建的任务分配
+  taskAssignment TaskAssignment[]
+  // 用户创建的附件
+  attachments    Attachment[]
+  // 用户创建的评论
+  comments       Comment[]
+  //
+  team           Team?            @relation(fields: [teamId], references: [id])
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  OperationLog OperationLog[]
+}
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Team {
+  id     String  @id @default(cuid())
+  name   String
+  avatar String?
+
+  // 项目负责人
+  productOwnerUserId   String?
+  // 项目经理
+  projectManagerUserId String?
+  // 开发人员
+  projectTeams         ProjectTeam[]
+
+  members   User[]
+  createdAt DateTime @default(now())
+}
+
+model Project {
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  startDate    DateTime?
+  endDate      DateTime?
+  tasks        Task[]
+  projectTeams ProjectTeam[]
+}
+
+model ProjectTeam {
+  id        String   @id @default(cuid())
+  teamId    String
+  projectId String
+
+  createdAt DateTime @default(now())
+
+  team    Team    @relation(fields: [teamId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
+}
+
+model Task {
+  id           String  @id @default(cuid())
+  title        String
+  description  String?
+  status       String?
+  // 优先级
+  priority     String?
+  tags         String?
+
+  startDate    DateTime?
+  dueDate      DateTime?
+  endDate      DateTime?
+
+  // 任务点数
+  points       Int?
+
+  projectId    String
+  // 任务创建者Id
+  authorUserId     String
+  // 任务分配者Id
+  assignedUserId   String?
+
+  // 任务附件
+  attachments  Attachment[]
+  // 任务评论
+  comments     Comment[]
+  // 任务分配表
+  taskAssignment TaskAssignment[]
+
+  author   User    @relation("TaskAuthor", fields: [authorUserId], references: [id])
+  assignee User?   @relation("TaskAssignee", fields: [assignedUserId], references: [id])
+  project  Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TaskAssignment {
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+
+  filename  String
+  fileURL      String?
+
+  createdAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  content   String
+
+  createdAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
