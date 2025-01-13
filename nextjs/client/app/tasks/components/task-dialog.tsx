@@ -1,9 +1,9 @@
 "use client";
 
-import { TaskFormData, taskSchema } from "@/actions/schemas/task.schema";
+import { TaskFormData, taskFormSchema } from "@/actions/schemas/task.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Dialog,
@@ -53,7 +53,7 @@ export function CreateTaskDialog({
   const [end, setEnd] = useState<Dayjs>();
 
   const form = useForm<TaskFormData>({
-    resolver: zodResolver(taskSchema),
+    resolver: zodResolver(taskFormSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -65,6 +65,7 @@ export function CreateTaskDialog({
       assignedUserId: "",
     },
   });
+  const { errors } = form.formState;
 
   const handleClose = () => {
     form.reset();
@@ -86,12 +87,15 @@ export function CreateTaskDialog({
         },
         body: JSON.stringify({
           ...data,
+          // todo:传入真实的authorUserId
           authorUserId: "1111",
           startDate: start?.toDate().toISOString(),
           dueDate: dueDate?.toDate().toISOString(),
           endDate: end?.toDate().toISOString(),
         }),
       });
+
+      console.log(response, "response");
 
       if (!response.ok) {
         throw new Error("Failed to create project");
@@ -107,6 +111,12 @@ export function CreateTaskDialog({
     }
   };
 
+  useEffect(() => {
+    if (errors) {
+      console.log(errors);
+    }
+  }, [errors]);
+
   return (
     <Dialog
       open={isOpen}
@@ -114,10 +124,16 @@ export function CreateTaskDialog({
         if (!open) handleClose();
       }}
     >
-      <DialogContent className="h-[80vh] overflow-y-auto sm:max-w-[600px]">
+      <DialogContent
+        className="h-[80vh] overflow-y-auto sm:max-w-[600px]"
+        aria-describedby="dialog-description"
+      >
         <DialogHeader>
           <DialogTitle>创建新任务</DialogTitle>
         </DialogHeader>
+        <div id="dialog-description">
+          <p>请填写以下表单以创建新任务。</p>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -129,7 +145,9 @@ export function CreateTaskDialog({
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {errors.title && (
+                    <FormMessage>{errors.title.message}</FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -142,7 +160,9 @@ export function CreateTaskDialog({
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {errors.description && (
+                    <FormMessage>{errors.description.message}</FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -167,7 +187,9 @@ export function CreateTaskDialog({
                       <SelectItem value="Done">Done</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  {errors.status && (
+                    <FormMessage>{errors.status.message}</FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -192,7 +214,9 @@ export function CreateTaskDialog({
                       <SelectItem value="High">High</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  {errors.priority && (
+                    <FormMessage>{errors.priority.message}</FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -208,7 +232,9 @@ export function CreateTaskDialog({
                       placeholder="Enter tags separated by commas"
                     />
                   </FormControl>
-                  <FormMessage />
+                  {errors.tags && (
+                    <FormMessage>{errors.tags.message}</FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -242,7 +268,9 @@ export function CreateTaskDialog({
                       onChange={(e) => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
-                  <FormMessage />
+                  {errors.points && (
+                    <FormMessage>{errors.points.message}</FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -269,7 +297,9 @@ export function CreateTaskDialog({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  {errors.projectId && (
+                    <FormMessage>{errors.projectId.message}</FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -295,7 +325,9 @@ export function CreateTaskDialog({
                       <SelectItem value="user3">User 3</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  {errors.assignedUserId && (
+                    <FormMessage>{errors.assignedUserId.message}</FormMessage>
+                  )}
                 </FormItem>
               )}
             />

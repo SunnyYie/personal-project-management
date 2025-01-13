@@ -1,7 +1,7 @@
-import { Prisma, Task } from "@prisma/client";
-import { ResponseType } from "./types";
-import prisma from "@/lib/prisma";
 import { TaskData } from "./schemas/task.schema";
+import { ResponseType } from "./types";
+import { Task } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 // 获取全部任务列表
 export const getTasks = async (): Promise<ResponseType<Task[]>> => {
@@ -65,12 +65,26 @@ export const getTasksByPage = async (
 export const createTask = async (
   values: TaskData,
 ): Promise<ResponseType<Task | null>> => {
+  if (typeof values !== "object" || values === null) {
+    throw new TypeError(
+      'The "payload" argument must be of type object. Received null',
+    );
+  }
   try {
     console.log("values", values);
 
     const task = await prisma.task.create({
       data: {
         ...values,
+        attachments: {
+          create: [],
+        },
+        comments: {
+          create: [],
+        },
+        taskAssignment: {
+          create: [],
+        },
       },
       include: {
         project: { select: { name: true } },
@@ -85,6 +99,9 @@ export const createTask = async (
       },
     };
   } catch (error) {
+    if (error instanceof Error) {
+      console.log("Error: ", error.stack);
+    }
     console.error("创建任务时出错:", error);
     return {
       status: 500,
