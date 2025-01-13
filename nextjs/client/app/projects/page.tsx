@@ -6,8 +6,8 @@ export default async function ProjectsPage({
 }: {
   searchParams: { query?: string; page?: string };
 }) {
-  const query = searchParams.query || "";
-  const page = Number(searchParams.page) || 1;
+  const query = searchParams?.query || "";
+  const page = Number(searchParams?.page) || 1;
   const pageSize = 10;
 
   const {

@@ -1,3 +1,5 @@
+import DashbBoard from "./dashboard/page";
+
 export default function Home() {
-  return <div>111</div>
+  return <DashbBoard />;
 }

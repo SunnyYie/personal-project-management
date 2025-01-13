@@ -1,4 +1,6 @@
+import { getProjects } from "@/actions/project";
 import { ComponentProps } from "react";
+
 import {
   AudioWaveform,
   BookOpen,
@@ -24,9 +26,7 @@ import { NavProjects } from "./nav-projects";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 
-import { getProjects } from "@/actions/project";
 import dynamic from "next/dynamic";
-// import TeamSwitcher from "./team-switcher";
 
 interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   // projects: Project[];
@@ -59,9 +59,19 @@ const data = {
   ],
   navMain: [
     {
+      title: "仪表盘",
+      url: "/",
+      icon: BookOpen,
+    },
+    {
       title: "项目",
       url: "/projects",
       icon: SquareTerminal,
+    },
+    {
+      title: "任务",
+      url: "/tasks",
+      icon: Bot,
     },
   ],
   projects: [
