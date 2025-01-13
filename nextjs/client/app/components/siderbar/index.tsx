@@ -1,6 +1,4 @@
-"use client";
-
-import * as React from "react";
+import { ComponentProps } from "react";
 import {
   AudioWaveform,
   BookOpen,
@@ -21,15 +19,20 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { TeamSwitcher } from "./team-switcher";
+
 import { NavProjects } from "./nav-projects";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { Project } from "@prisma/client";
 
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+import { getProjects } from "@/actions/project";
+import dynamic from "next/dynamic";
+// import TeamSwitcher from "./team-switcher";
+
+interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   // projects: Project[];
 }
+
+const TeamSwitcher = dynamic(() => import("./team-switcher"));
 
 const data = {
   user: {
@@ -56,89 +59,9 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
+      title: "项目",
+      url: "/projects",
       icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
     },
   ],
   projects: [
@@ -160,11 +83,13 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: AppSidebarProps) {
+export async function AppSidebar({ ...props }: AppSidebarProps) {
+  const project = await getProjects();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
