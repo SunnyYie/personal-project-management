@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,23 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model User {
-  id     String  @id @default(cuid())
-  email  String  @unique
-  name   String?
-  avatar String?
-  role   Role    @default(USER)
-
-  password String
-
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  OperationLog OperationLog[]
+  id                             String           @id @default(cuid())
+  email                          String           @unique
+  name                           String
+  avatar                         String?
+  role                           Role             @default(USER)
+  password                       String
+  createdAt                      DateTime         @default(now())
+  updatedAt                      DateTime         @updatedAt
+  cognitoId                      String           @unique
+  teamId                         String           @unique
+  Attachment                     Attachment[]
+  Comment                        Comment[]
+  OperationLog                   OperationLog[]
+  Task_Task_assignedUserIdToUser Task[]           @relation("Task_assignedUserIdToUser")
+  Task_Task_authorUserIdToUser   Task[]           @relation("Task_authorUserIdToUser")
+  TaskAssignment                 TaskAssignment[]
+  Team                           Team             @relation(fields: [teamId], references: [id])
 }
 
 model VerificationCode {
@@ -42,21 +37,20 @@ model VerificationCode {
 
 model OperationLog {
   id        String   @id @default(cuid())
-  userId    String? // 关联的用户ID
-  email     String? // 用户邮箱，冗余存储方便查询
-  ip        String // IP地址
-  method    String // HTTP方法
-  path      String // 请求路径
-  params    Json? // 请求参数
-  userAgent String // 浏览器信息
-  device    String? // 设备信息
-  platform  String? // 操作系统
-  status    Int // 响应状态码
-  response  Json? // 响应数据
-  duration  Int // 请求处理时长(ms)
+  userId    String?
+  email     String?
+  ip        String
+  method    String
+  path      String
+  params    Json?
+  userAgent String
+  device    String?
+  platform  String?
+  status    Int
+  response  Json?
+  duration  Int
   createdAt DateTime @default(now())
-
-  user User? @relation(fields: [userId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
 }
 
 model File {
@@ -66,4 +60,93 @@ model File {
   mimetype  String?
   size      Int
   createdAt DateTime @default(now())
+}
+
+model Attachment {
+  id        String   @id
+  taskId    String
+  userId    String
+  filename  String
+  fileURL   String?
+  createdAt DateTime @default(now())
+  Task      Task     @relation(fields: [taskId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        String   @id
+  taskId    String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  Task      Task     @relation(fields: [taskId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+model Project {
+  id          String        @id
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  ProjectTeam ProjectTeam[]
+  Task        Task[]
+}
+
+model ProjectTeam {
+  id        String   @id
+  teamId    String
+  projectId String
+  createdAt DateTime @default(now())
+  Project   Project  @relation(fields: [projectId], references: [id])
+  Team      Team     @relation(fields: [teamId], references: [id])
+}
+
+model Task {
+  id                             String           @id
+  title                          String
+  description                    String?
+  status                         String?
+  priority                       String?
+  tags                           String?
+  startDate                      DateTime?
+  dueDate                        DateTime?
+  endDate                        DateTime?
+  points                         Int?
+  projectId                      String
+  authorUserId                   String
+  assignedUserId                 String?
+  createdAt                      DateTime         @default(now())
+  updatedAt                      DateTime
+  Attachment                     Attachment[]
+  Comment                        Comment[]
+  User_Task_assignedUserIdToUser User?            @relation("Task_assignedUserIdToUser", fields: [assignedUserId], references: [id])
+  User_Task_authorUserIdToUser   User             @relation("Task_authorUserIdToUser", fields: [authorUserId], references: [id])
+  Project                        Project          @relation(fields: [projectId], references: [id])
+  TaskAssignment                 TaskAssignment[]
+}
+
+model TaskAssignment {
+  id        String   @id
+  taskId    String
+  userId    String
+  createdAt DateTime @default(now())
+  Task      Task     @relation(fields: [taskId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+model Team {
+  id                   String        @id
+  name                 String
+  avatar               String?
+  productOwnerUserId   String?
+  projectManagerUserId String?
+  createdAt            DateTime      @default(now())
+  ProjectTeam          ProjectTeam[]
+  User                 User?
+}
+
+enum Role {
+  USER
+  ADMIN
 }

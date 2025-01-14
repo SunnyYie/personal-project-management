@@ -39,6 +39,7 @@ interface TaskTableProps {
   initialPage: number;
   pageSize: number;
   projects: { id: string; name: string }[];
+  users: { id: string; name: string }[];
 }
 
 export default function TaskTable({
@@ -47,10 +48,11 @@ export default function TaskTable({
   initialPage,
   pageSize,
   projects,
+  users,
 }: TaskTableProps) {
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [tasks, setTasks] = useState(initialTasks);
   const [page, setPage] = useState(initialPage);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -73,9 +75,14 @@ export default function TaskTable({
     router.push(`/tasks?query=${encodeURIComponent(query)}&page=${newPage}`);
   };
 
-  const handleTaskCreated = (newTask: Task) => {
+  const handleTaskCreated = () => {
     setIsCreateDialogOpen(false);
-    router.refresh();
+    router.push("/tasks");
+  };
+
+  const handleEdit = (task: Task) => {
+    setIsCreateDialogOpen(true);
+    router.push(`/tasks?task=${JSON.stringify(task)}`);
   };
 
   return (
@@ -113,7 +120,7 @@ export default function TaskTable({
           <TableRow>
             <TableHead>任务名</TableHead>
             <TableHead>状态</TableHead>
-            <TableHead>Priority</TableHead>
+            <TableHead>优先级</TableHead>
             <TableHead>持续时间</TableHead>
           </TableRow>
         </TableHeader>
@@ -129,7 +136,11 @@ export default function TaskTable({
                   : "N/A"}
               </TableCell>
               <TableCell>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleEdit(task)}
+                >
                   <Edit />
                   编辑
                 </Button>
@@ -167,8 +178,9 @@ export default function TaskTable({
       </Pagination>
       <CreateTaskDialog
         projects={projects}
+        users={users}
         isOpen={isCreateDialogOpen}
-        onClose={() => setIsCreateDialogOpen(false)}
+        onClose={handleTaskCreated}
         onTaskCreated={handleTaskCreated}
       />
     </div>

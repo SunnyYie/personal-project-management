@@ -1,18 +1,6 @@
 import { getProjects } from "@/actions/project";
 import { ComponentProps } from "react";
-
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
+import dynamic from "next/dynamic";
 
 import {
   Sidebar,
@@ -21,12 +9,10 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-
+import { BookOpen, Bot, SquareTerminal } from "lucide-react";
 import { NavProjects } from "./nav-projects";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-
-import dynamic from "next/dynamic";
 
 interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   // projects: Project[];
@@ -40,23 +26,6 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
       title: "仪表盘",
@@ -74,27 +43,12 @@ const data = {
       icon: Bot,
     },
   ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
 };
 
 export async function AppSidebar({ ...props }: AppSidebarProps) {
-  const project = await getProjects();
+  const {
+    data: { body: projects },
+  } = await getProjects();
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -103,7 +57,7 @@ export async function AppSidebar({ ...props }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

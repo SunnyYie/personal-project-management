@@ -2,8 +2,10 @@
 
 import { TaskFormData, taskFormSchema } from "@/actions/schemas/task.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { taskPriorities, taskStatuses } from "@/types/task.types";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import dayjs, { Dayjs } from "dayjs";
 
 import {
   Dialog,
@@ -30,8 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import DatePicker from "@/components/date-picker";
-import { Dayjs } from "dayjs";
 import { Label } from "@/components/ui/label";
+import { useSearchParams } from "next/navigation";
 
 interface CreateTaskDialogProps {
   isOpen: boolean;
@@ -39,6 +41,7 @@ interface CreateTaskDialogProps {
   onTaskCreated: (task: any) => void;
 
   projects: { id: string; name: string }[];
+  users: { id: string; name: string }[];
 }
 
 export function CreateTaskDialog({
@@ -46,7 +49,11 @@ export function CreateTaskDialog({
   onClose,
   onTaskCreated,
   projects,
+  users,
 }: CreateTaskDialogProps) {
+  const searchParams = useSearchParams();
+  const task = searchParams.get("task");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [start, setStart] = useState<Dayjs>();
   const [dueDate, setDueDate] = useState<Dayjs>();
@@ -77,39 +84,55 @@ export function CreateTaskDialog({
   };
 
   const onSubmit = async (data: TaskFormData) => {
-    console.log(data, "data");
     setIsSubmitting(true);
     try {
       const response = await fetch("/api/tasks", {
-        method: "POST",
+        method: task ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...data,
           // todo:传入真实的authorUserId
-          authorUserId: "1111",
+          authorUserId: "mcgdg01",
           startDate: start?.toDate().toISOString(),
           dueDate: dueDate?.toDate().toISOString(),
           endDate: end?.toDate().toISOString(),
+          ...(task && { taskId: JSON.parse(task).id }),
         }),
       });
 
-      console.log(response, "response");
-
       if (!response.ok) {
-        throw new Error("Failed to create project");
+        throw new Error("Failed to operate project");
       }
 
       const newProject = await response.json();
       onTaskCreated(newProject);
       form.reset();
     } catch (error) {
-      console.error("Failed to create project:", error);
+      console.error("Failed to operate project:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (task) {
+      const taskObj = JSON.parse(task);
+      form.setValue("title", taskObj.title);
+      form.setValue("description", taskObj.description);
+      form.setValue("status", taskObj.status);
+      form.setValue("priority", taskObj.priority);
+      form.setValue("tags", taskObj.tags);
+      form.setValue("points", taskObj.points);
+      form.setValue("projectId", taskObj.projectId);
+      form.setValue("assignedUserId", taskObj.assignedUserId);
+
+      setStart(dayjs(taskObj.startDate));
+      setDueDate(dayjs(taskObj.dueDate));
+      setEnd(dayjs(taskObj.endDate));
+    }
+  }, [task]);
 
   useEffect(() => {
     if (errors) {
@@ -129,7 +152,7 @@ export function CreateTaskDialog({
         aria-describedby="dialog-description"
       >
         <DialogHeader>
-          <DialogTitle>创建新任务</DialogTitle>
+          <DialogTitle>{task ? "编辑任务" : "创建任务"}</DialogTitle>
         </DialogHeader>
         <div id="dialog-description">
           <p>请填写以下表单以创建新任务。</p>
@@ -182,9 +205,11 @@ export function CreateTaskDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="To Do">To Do</SelectItem>
-                      <SelectItem value="In Progress">In Progress</SelectItem>
-                      <SelectItem value="Done">Done</SelectItem>
+                      {taskStatuses.map((status) => (
+                        <SelectItem key={status.key} value={status.key}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   {errors.status && (
@@ -205,13 +230,15 @@ export function CreateTaskDialog({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
+                        <SelectValue placeholder="选择任务优先级" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Low">Low</SelectItem>
-                      <SelectItem value="Medium">Medium</SelectItem>
-                      <SelectItem value="High">High</SelectItem>
+                      {taskPriorities.map((priority) => (
+                        <SelectItem key={priority.key} value={priority.key}>
+                          {priority.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   {errors.priority && (
@@ -308,21 +335,22 @@ export function CreateTaskDialog({
               name="assignedUserId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Assignee</FormLabel>
+                  <FormLabel>任务发布人</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select assignee" />
+                        <SelectValue placeholder="选择发布人" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {/* TODO: Fetch and populate users */}
-                      <SelectItem value="user1">User 1</SelectItem>
-                      <SelectItem value="user2">User 2</SelectItem>
-                      <SelectItem value="user3">User 3</SelectItem>
+                      {users.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   {errors.assignedUserId && (

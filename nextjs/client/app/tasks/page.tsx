@@ -1,6 +1,7 @@
 import { getTasksByPage } from "@/actions/task";
 import TaskTable from "./components/task-table";
 import { getProjects } from "@/actions/project";
+import { getUsers } from "@/actions/user";
 
 export default async function TasksPage({
   searchParams,
@@ -16,6 +17,9 @@ export default async function TasksPage({
   const {
     data: { body: Tasks, totalCount },
   } = await getTasksByPage(page, pageSize);
+  const {
+    data: { body: users },
+  } = await getUsers();
 
   return (
     <div className="container mx-auto py-10">
@@ -26,6 +30,7 @@ export default async function TasksPage({
         initialPage={page}
         pageSize={pageSize}
         projects={projects}
+        users={users}
       />
     </div>
   );

@@ -74,6 +74,38 @@ export const getProjectsByPage = async (
   }
 };
 
+// 获取项目详情
+export const getProjectById = async (
+  projectId: string,
+): Promise<ResponseType<Project | null>> => {
+  try {
+    const project = await prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+      include: {
+        tasks: true,
+        projectTeams: true,
+      },
+    });
+    return {
+      status: 200,
+      data: {
+        body: project,
+      },
+    };
+  } catch (error) {
+    console.error("获取项目详情时出错:", error);
+    return {
+      status: 500,
+      data: {
+        body: null,
+      },
+      error: "无法获取项目详情",
+    };
+  }
+};
+
 // 创建项目
 export const createProject = async (
   values: ProjectData,

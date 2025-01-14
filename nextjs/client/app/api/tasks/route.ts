@@ -1,5 +1,5 @@
+import { createTask, updateTask, updateTaskStatus } from "@/actions/task";
 import { NextApiRequest, NextApiResponse } from "next";
-import { createTask } from "@/actions/task";
 import { NextResponse } from "next/server";
 
 export default async function handler(
@@ -43,5 +43,28 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("创建任务时出错:", error);
     return NextResponse.json({ error: "无法创建任务" }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  console.log("data Put", request);
+  try {
+    const data = await request.json();
+    const taskId = data.taskId;
+    const operation = data.operation;
+    delete data.taskId;
+    delete data.operation;
+
+    let task;
+    if (operation === "updateStatus") {
+      task = await updateTaskStatus(taskId, data.status);
+    } else {
+      task = await updateTask(taskId, data);
+    }
+
+    return NextResponse.json(task, { status: 200 });
+  } catch (error) {
+    console.error("更新任务时出错:", error);
+    return NextResponse.json({ error: "无法更新任务" }, { status: 500 });
   }
 }

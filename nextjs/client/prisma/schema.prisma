@@ -5,6 +5,8 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  // directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model File {
@@ -41,7 +43,7 @@ model User {
   // 团队ID
   teamId    String  @unique
   email     String  @unique
-  name      String?
+  name      String
   avatar    String?
   role      Role    @default(USER)
 
@@ -105,7 +107,7 @@ model Project {
 }
 
 model ProjectTeam {
-  id        String   @id @default(cuid())
+  id        String @id @default(cuid())
   teamId    String
   projectId String
 
@@ -116,31 +118,31 @@ model ProjectTeam {
 }
 
 model Task {
-  id           String  @id @default(cuid())
-  title        String
-  description  String?
-  status       String?
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  status      String?
   // 优先级
-  priority     String?
-  tags         String?
+  priority    String?
+  tags        String?
 
-  startDate    DateTime?
-  dueDate      DateTime?
-  endDate      DateTime?
+  startDate DateTime?
+  dueDate   DateTime?
+  endDate   DateTime?
 
   // 任务点数
-  points       Int?
+  points Int?
 
-  projectId    String
+  projectId      String
   // 任务创建者Id
-  authorUserId     String
+  authorUserId   String
   // 任务分配者Id
-  assignedUserId   String?
+  assignedUserId String?
 
   // 任务附件
-  attachments  Attachment[]
+  attachments    Attachment[]
   // 任务评论
-  comments     Comment[]
+  comments       Comment[]
   // 任务分配表
   taskAssignment TaskAssignment[]
 
@@ -163,12 +165,12 @@ model TaskAssignment {
 }
 
 model Attachment {
-  id        String   @id @default(cuid())
-  taskId    String
-  userId    String
+  id     String @id @default(cuid())
+  taskId String
+  userId String
 
-  filename  String
-  fileURL      String?
+  filename String
+  fileURL  String?
 
   createdAt DateTime @default(now())
 
@@ -177,10 +179,10 @@ model Attachment {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  taskId    String
-  userId    String
-  content   String
+  id      String @id @default(cuid())
+  taskId  String
+  userId  String
+  content String
 
   createdAt DateTime @default(now())
 
