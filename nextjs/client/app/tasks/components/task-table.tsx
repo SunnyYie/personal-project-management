@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Edit, Delete } from "lucide-react";
-import { Task } from "@prisma/client";
-import { format } from "date-fns";
+import { taskStatuses } from "@/types/task.types";
 import { useState } from "react";
 
+import PriorityTag from "@/components/tasks-kanban/priority-tag";
+import { TaskWithRelations } from "@/actions/types";
 import { CreateTaskDialog } from "./task-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,9 +32,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface TaskTableProps {
-  initialTasks?: Task[];
+  initialTasks?: TaskWithRelations[];
   totalCount?: number;
   initialPage: number;
   pageSize: number;
@@ -80,7 +81,7 @@ export default function TaskTable({
     router.push("/tasks");
   };
 
-  const handleEdit = (task: Task) => {
+  const handleEdit = (task: TaskWithRelations) => {
     setIsCreateDialogOpen(true);
     router.push(`/tasks?task=${JSON.stringify(task)}`);
   };
@@ -119,36 +120,56 @@ export default function TaskTable({
         <TableHeader>
           <TableRow>
             <TableHead>任务名</TableHead>
-            <TableHead>状态</TableHead>
-            <TableHead>优先级</TableHead>
+            <TableHead>任务描述</TableHead>
+            <TableHead>任务状态</TableHead>
+            <TableHead>任务优先级</TableHead>
+            <TableHead>任务标签</TableHead>
+            <TableHead>开始时间</TableHead>
             <TableHead>持续时间</TableHead>
+            <TableHead>任务创建人</TableHead>
+            <TableHead>任务分配人</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {tasks?.map((task) => (
             <TableRow key={task.id}>
               <TableCell>{task.title}</TableCell>
-              <TableCell>{task.status}</TableCell>
-              <TableCell>{task.priority}</TableCell>
+              <TableCell>{task.description}</TableCell>
               <TableCell>
-                {task.dueDate
-                  ? format(new Date(task.dueDate), "yyyy-MM-dd")
+                <Badge
+                  variant="secondary"
+                  className="mr-1"
+                  style={{
+                    backgroundColor: taskStatuses.find(
+                      (item) => item.key == task.status,
+                    )?.color,
+                  }}
+                >
+                  {task.status}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <PriorityTag priority={task.priority!} />
+              </TableCell>
+              <TableCell>
+                {task.tags?.split(",").map((tag) => (
+                  <Badge key={tag} variant="secondary" className="mr-1">
+                    {tag.trim()}
+                  </Badge>
+                ))}
+              </TableCell>
+              <TableCell>
+                {task.startDate
+                  ? new Date(task.startDate).toLocaleDateString()
                   : "N/A"}
               </TableCell>
               <TableCell>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEdit(task)}
-                >
-                  <Edit />
-                  编辑
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Delete />
-                  删除
-                </Button>
+                {task.dueDate
+                  ? new Date(task.dueDate).toLocaleDateString()
+                  : "N/A"}
               </TableCell>
+              <TableCell>{task?.author?.name}</TableCell>
+              <TableCell>{task.assignee?.name ?? "Unassigned"}</TableCell>
             </TableRow>
           ))}
         </TableBody>

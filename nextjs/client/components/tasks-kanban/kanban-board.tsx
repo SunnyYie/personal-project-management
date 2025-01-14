@@ -52,7 +52,7 @@ export default function KanbanBoard({ initialTasks }: KanbanBoardProps) {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex flex-row gap-4 bg-slate-100 p-4 dark:bg-neutral-700 sm:flex-col">
+      <div className="flex flex-col gap-4 bg-slate-100 p-4 dark:bg-neutral-700 sm:flex-row">
         {taskStatuses.map((statusObj) => (
           <TaskColumn
             key={statusObj.key}

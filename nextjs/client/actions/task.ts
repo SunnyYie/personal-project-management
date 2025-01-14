@@ -30,7 +30,7 @@ export const getTasks = async (): Promise<ResponseType<Task[]>> => {
 export const getTasksByPage = async (
   page: number,
   pageSize: number,
-): Promise<ResponseType<Task[]>> => {
+): Promise<ResponseType<TaskWithRelations[]>> => {
   const skip = (page - 1) * pageSize;
   try {
     const [tasks, totalCount] = await Promise.all([
@@ -38,6 +38,12 @@ export const getTasksByPage = async (
         skip,
         take: pageSize,
         orderBy: { startDate: "desc" },
+        include: {
+          comments: true,
+          assignee: true,
+          attachments: true,
+          author: true,
+        },
       }),
       prisma.task.count(),
     ]);

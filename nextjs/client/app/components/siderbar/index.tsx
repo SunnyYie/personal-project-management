@@ -9,7 +9,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { BookOpen, Bot, SquareTerminal } from "lucide-react";
+import { BookOpen, Bot, Clock, Settings, SquareTerminal } from "lucide-react";
 import { NavProjects } from "./nav-projects";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -41,6 +41,16 @@ const data = {
       title: "任务",
       url: "/tasks",
       icon: Bot,
+    },
+    {
+      title: "时间线",
+      url: "/timeline",
+      icon: Clock,
+    },
+    {
+      title: "设置",
+      url: "/settings",
+      icon: Settings,
     },
   ],
 };

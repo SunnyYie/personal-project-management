@@ -1,3 +1,4 @@
+import { CreateTaskDialog } from "@/app/tasks/components/task-dialog";
 import { EllipsisVertical, Plus } from "lucide-react";
 import { TaskCard } from "./task-card";
 import { Button } from "../ui/button";
@@ -27,28 +28,26 @@ export function TaskColumn({ status, tasks, onTaskMove }: TaskColumnProps) {
     }),
   }));
 
-  const [CreateTaskDialog, setCreateTaskDialog] = useState(false);
-
   return (
     <div
       ref={(instance) => {
         drop(instance);
       }}
-      className={`sl:py-4 rounded-lg py-2 xl:px-2 ${isOver ? "bg-blue-100 dark:bg-neutral-900" : ""}`}
+      className={`sl:py-4 flex-1 rounded-lg py-2 xl:px-2 ${isOver ? "bg-blue-100 dark:bg-neutral-900" : ""}`}
     >
       <div className="mb-3 flex w-full">
         <div
-          className={`w-2 !bg-[${taskStatuses.find((item) => item.key == status)}] rounded-s-lg`}
+          className={`w-2 rounded-s-lg`}
           style={{
             backgroundColor: taskStatuses.find((item) => item.key == status)
               ?.color,
           }}
         />
-        <div className="flex w-full items-center justify-between rounded-e-lg bg-white p-5 dark:bg-secondary">
+        <div className="flex flex-grow items-center justify-between rounded-e-lg bg-white p-5 dark:bg-secondary">
           <h3 className="flex items-center text-lg font-semibold dark:text-white">
             {taskStatuses.find((item) => item.key == status)?.label}
             <span
-              className="dark: ml-2 inline-block rounded-full bg-gray-200 p-1 text-center text-sm dark:bg-gray-800"
+              className="ml-2 inline-block rounded-full bg-gray-200 p-1 text-center text-sm dark:bg-gray-800"
               style={{ height: "1.5rem", width: "1.5rem", lineHeight: "16px" }}
             >
               {tasks.length}
@@ -63,7 +62,6 @@ export function TaskColumn({ status, tasks, onTaskMove }: TaskColumnProps) {
               className="bg-gray-200 dark:bg-gray-700"
               size="icon"
               variant="ghost"
-              onClick={() => setCreateTaskDialog(true)}
             >
               <Plus />
             </Button>

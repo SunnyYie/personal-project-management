@@ -20,16 +20,16 @@ export const taskPriorities = [
   {
     key: "low",
     label: "低优先级",
-    color: "bg-green-200 text-green-700",
+    color: "green",
   },
   {
     key: "medium",
     label: "中优先级",
-    color: "bg-yellow-200 text-yellow-700",
+    color: "yellow",
   },
   {
     key: "high",
     label: "高优先级",
-    color: "bg-red-200 text-red-700",
+    color: "red",
   },
 ];

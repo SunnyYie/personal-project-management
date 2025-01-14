@@ -1,6 +1,7 @@
 import ReactQueryProvider from "./providers/react-query-providers";
 import { Geist, Geist_Mono } from "next/font/google";
 import type { Metadata } from "next";
+import "gantt-task-react/dist/index.css";
 import "react-day-picker/style.css";
 import "./globals.css";
 
