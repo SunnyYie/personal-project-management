@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+
 export function hexToRgb(hex: string): [number, number, number] {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
@@ -16,7 +18,7 @@ export function rgbToHex(r: number, g: number, b: number): string {
 export function rgbToHsb(
   r: number,
   g: number,
-  b: number
+  b: number,
 ): [number, number, number] {
   r /= 255;
   g /= 255;
@@ -49,7 +51,7 @@ export function rgbToHsb(
 export function hsbToRgb(
   h: number,
   s: number,
-  v: number
+  v: number,
 ): [number, number, number] {
   h /= 360;
   s /= 100;
