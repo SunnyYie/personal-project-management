@@ -13,11 +13,11 @@ model User {
   name                           String
   avatar                         String?
   role                           Role             @default(USER)
-  password                       String
+  password                       String?
   createdAt                      DateTime         @default(now())
-  updatedAt                      DateTime         @updatedAt
-  cognitoId                      String           @unique
-  teamId                         String           @unique
+  updatedAt                      DateTime?        @updatedAt
+  cognitoId                      String?          @unique
+  teamId                         String?          @unique
   Attachment                     Attachment[]
   Comment                        Comment[]
   OperationLog                   OperationLog[]
@@ -137,7 +137,7 @@ model Task {
   authorUserId                   String
   assignedUserId                 String?
   createdAt                      DateTime         @default(now())
-  updatedAt                      DateTime
+  updatedAt                      DateTime?        @updatedAt
   Attachment                     Attachment[]
   Comment                        Comment[]
   User_Task_assignedUserIdToUser User?            @relation("Task_assignedUserIdToUser", fields: [assignedUserId], references: [id])
