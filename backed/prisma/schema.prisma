@@ -24,7 +24,27 @@ model User {
   Task_Task_assignedUserIdToUser Task[]           @relation("Task_assignedUserIdToUser")
   Task_Task_authorUserIdToUser   Task[]           @relation("Task_authorUserIdToUser")
   TaskAssignment                 TaskAssignment[]
-  Team                           Team             @relation(fields: [teamId], references: [id])
+  UserTeam                       UserTeam[]
+}
+
+model Team {
+  id                   String        @id
+  name                 String
+  avatar               String?
+  productOwnerUserId   String?
+  projectManagerUserId String?
+  createdAt            DateTime      @default(now())
+  ProjectTeam          ProjectTeam[]
+  UserTeam             UserTeam[]
+}
+
+model UserTeam {
+  id        String   @id
+  userId    String
+  teamId    String
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id])
+  Team      Team     @relation(fields: [teamId], references: [id])
 }
 
 model VerificationCode {
@@ -133,17 +153,6 @@ model TaskAssignment {
   createdAt DateTime @default(now())
   Task      Task     @relation(fields: [taskId], references: [id])
   User      User     @relation(fields: [userId], references: [id])
-}
-
-model Team {
-  id                   String        @id
-  name                 String
-  avatar               String?
-  productOwnerUserId   String?
-  projectManagerUserId String?
-  createdAt            DateTime      @default(now())
-  ProjectTeam          ProjectTeam[]
-  User                 User?
 }
 
 enum Role {
