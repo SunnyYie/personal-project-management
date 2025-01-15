@@ -9,6 +9,7 @@ import { LayoutBreadcrumb } from "./components/header/components/breadcrumb";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppSidebar } from "./components/siderbar";
+import { ClerkProvider } from "@clerk/nextjs";
 import Header from "./components/header";
 
 const geistSans = Geist({
@@ -32,31 +33,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ReactQueryProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset className="flex flex-col">
-                <Header />
-                <LayoutBreadcrumb />
-
-                <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                  {children}
-                </div>
-              </SidebarInset>
-            </SidebarProvider>
-          </ThemeProvider>
-        </ReactQueryProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <ReactQueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <div className="flex h-full w-full items-center justify-center">
+                {children}
+              </div>
+            </ThemeProvider>
+          </ReactQueryProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

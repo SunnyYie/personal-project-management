@@ -1,32 +1,32 @@
-import { createProject, getProjectsByTeam } from "@/actions/project";
 import { NextApiRequest, NextApiResponse } from "next";
+import { createUser, getUser } from "@/actions/user";
 import { NextResponse } from "next/server";
 
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const teamId = req.url?.split("=")[1] as string;
+    const userEmail = req.url?.split("=")[1] as string;
 
-    if (!teamId) {
+    if (!userEmail) {
       return NextResponse.json(
-        { error: "Team ID is required" },
+        { error: "user ID is required" },
         { status: 400 },
       );
     }
 
     const {
-      data: { body: projects },
-    } = await getProjectsByTeam(teamId);
+      data: { body: user },
+    } = await getUser(userEmail);
 
-    if (!projects.length) {
+    if (!user) {
       return NextResponse.json(
         { error: "No projects found for this team" },
         { status: 404 },
       );
     }
 
-    return NextResponse.json(projects, { status: 200 });
+    return NextResponse.json(user, { status: 200 });
   } catch (error) {
-    console.error("Failed to fetch projects", error);
+    console.error("Failed to fetch user", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
@@ -35,12 +35,14 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export async function POST(request: Request) {
+  console.log("data", request);
   try {
     const data = await request.json();
-    const project = await createProject(data);
-    return NextResponse.json(project, { status: 200 });
+
+    const user = await createUser(data);
+    return NextResponse.json(user, { status: 200 });
   } catch (error) {
-    console.error("创建项目时出错:", error);
-    return NextResponse.json({ error: "无法创建项目" }, { status: 500 });
+    console.error("创建用户时出错:", error);
+    return NextResponse.json({ error: "无法创建用户" }, { status: 500 });
   }
 }

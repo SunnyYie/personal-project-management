@@ -1,6 +1,7 @@
-import { getProjects } from "@/actions/project";
-import { ComponentProps } from "react";
-import dynamic from "next/dynamic";
+"use client";
+
+import { ComponentProps, useEffect } from "react";
+import useStore from "@/store";
 
 import {
   Sidebar,
@@ -9,16 +10,23 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { BookOpen, Bot, Clock, Settings, SquareTerminal } from "lucide-react";
+import {
+  BookOpen,
+  Bot,
+  Clock,
+  Settings,
+  SquareTerminal,
+  User,
+  Workflow,
+} from "lucide-react";
 import { NavProjects } from "./nav-projects";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
+import TeamSwitcher from "./team-switcher";
 
 interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   // projects: Project[];
 }
-
-const TeamSwitcher = dynamic(() => import("./team-switcher"));
 
 const data = {
   user: {
@@ -31,6 +39,16 @@ const data = {
       title: "仪表盘",
       url: "/",
       icon: BookOpen,
+    },
+    {
+      title: "团队",
+      url: "/teams",
+      icon: Workflow,
+    },
+    {
+      title: "成员",
+      url: "/members",
+      icon: User,
     },
     {
       title: "项目",
@@ -55,15 +73,46 @@ const data = {
   ],
 };
 
-export async function AppSidebar({ ...props }: AppSidebarProps) {
-  const {
-    data: { body: projects },
-  } = await getProjects();
+export function AppSidebar({ ...props }: AppSidebarProps) {
+  const setTeams = useStore((state) => state.setTeams);
+  const setProjects = useStore((state) => state.setProjects);
+
+  const userInfo = useStore((state) => state.userInfo);
+  const teams = useStore((state) => state.teams);
+  const projects = useStore((state) => state.projects);
+
+  useEffect(() => {
+    console.log("userInfo", userInfo);
+
+    async function fetchData() {
+      const teams = await fetch(`/api/teams?userId=mcgdg001`).then((res) =>
+        res.json(),
+      );
+
+      if (!teams.length) {
+        return;
+      }
+
+      setTeams(teams);
+
+      const projects = await fetch(`/api/projects?teamId=${teams[0].id}`).then(
+        (res) => res.json(),
+      );
+
+      setProjects(projects);
+    }
+
+    fetchData();
+  }, [setTeams, setProjects]);
+
+  if (!teams.length) {
+    return null;
+  }
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher />
+        <TeamSwitcher teams={teams} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

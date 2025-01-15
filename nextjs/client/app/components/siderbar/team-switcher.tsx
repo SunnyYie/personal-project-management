@@ -7,7 +7,9 @@ import {
   GalleryVerticalEnd,
   Plus,
 } from "lucide-react";
-
+import { Team } from "@prisma/client";
+import { useState } from "react";
+import useStore from "@/store";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,50 +25,45 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useState } from "react";
 
-export default function TeamSwitcher({
-  teamss,
-}: {
-  teamss?: {
-    name: string;
-    logo: React.ElementType;
-    plan: string;
-  }[];
-}) {
+interface TeamSwitcherProps {
+  teams: Team[];
+}
+
+export default function TeamSwitcher({ teams }: TeamSwitcherProps) {
+  // 初始化团队数据
+  const configedTeams = teams.map((team, index) => ({
+    ...team,
+    logo:
+      index === 0 ? GalleryVerticalEnd : index === 1 ? AudioWaveform : Command,
+    plan: index === 0 ? "Enterprise" : index === 1 ? "Startup" : "Free",
+  }));
+  const [activeTeam, setActiveTeamState] = useState(configedTeams[0]);
+
   const { isMobile } = useSidebar();
-  const teams = [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ];
-  const [activeTeam, setActiveTeam] = useState({
-    name: "Acme Corp.",
-    logo: AudioWaveform,
-    plan: "Startup",
-  });
+  const setActiveTeam = useStore((state) => state.setActiveTeam);
+  const setProjects = useStore((state) => state.setProjects);
+
+  const handleSwitchTeam = async (team: Team & { logo: any; plan: string }) => {
+    try {
+      setActiveTeamState(team);
+      setActiveTeam(team);
+
+      const projects = await fetch(`/api/projects?teamId=${team.id}`).then(
+        (res) => res.json(),
+      );
+      setProjects(projects);
+    } catch (e) {
+      console.error("Failed to fetch team data", e);
+    }
+  };
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
+            <SidebarMenuButton size="lg">
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <activeTeam.logo className="size-4" />
               </div>
@@ -80,18 +77,17 @@ export default function TeamSwitcher({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             align="start"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Teams
+              团队
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+            {configedTeams.map((team, index) => (
               <DropdownMenuItem
                 key={team.name}
-                onClick={() => setActiveTeam(team)}
+                onClick={() => handleSwitchTeam(team)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
@@ -106,7 +102,7 @@ export default function TeamSwitcher({
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
               </div>
-              <div className="font-medium text-muted-foreground">Add team</div>
+              <div className="font-medium text-muted-foreground">添加团队</div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

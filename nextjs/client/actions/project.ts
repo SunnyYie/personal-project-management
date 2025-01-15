@@ -74,6 +74,38 @@ export const getProjectsByPage = async (
   }
 };
 
+// 根据团队获取项目列表
+export const getProjectsByTeam = async (
+  teamId: string,
+): Promise<ResponseType<Project[]>> => {
+  try {
+    const projects = await prisma.project.findMany({
+      where: {
+        projectTeams: {
+          some: {
+            teamId,
+          },
+        },
+      },
+    });
+    return {
+      status: 200,
+      data: {
+        body: projects,
+      },
+    };
+  } catch (error) {
+    console.error("获取项目列表时出错:", error);
+    return {
+      status: 500,
+      data: {
+        body: [],
+      },
+      error: "无法获取项目列表",
+    };
+  }
+};
+
 // 获取项目详情
 export const getProjectById = async (
   projectId: string,

@@ -11,6 +11,7 @@ import { ModeToggle } from "./components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { UserButton } from "@clerk/nextjs";
 
 export default function Header() {
   return (
@@ -32,18 +33,7 @@ export default function Header() {
         <div className="flex items-center space-x-2">
           <ModeToggle />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-                <span className="sr-only">User Menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Log out</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <UserButton />
           <Button variant="ghost" size="icon">
             <Settings className="h-5 w-5" />
             <span className="sr-only">Settings</span>
