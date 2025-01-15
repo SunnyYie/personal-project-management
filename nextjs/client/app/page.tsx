@@ -1,33 +1,31 @@
 "use client";
 
-import { LayoutBreadcrumb } from "./components/header/components/breadcrumb";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "./components/siderbar";
-import { Role, UserResource } from "@/types/user.type";
+import { UserResource } from "@/types/user.type";
+import { redirect } from "next/navigation";
 import DashbBoard from "./dashboard/page";
-import Header from "./components/header";
 import { useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
 import useStore from "@/store";
 
 export default function Home() {
   const setUserInfo = useStore((state) => state.setUserInfo);
-  const userInfo = useStore((state) => state.userInfo);
+  const setProjects = useStore((state) => state.setProjects);
+  const setTeams = useStore((state) => state.setTeams);
   const { user } = useUser();
 
-  const getUserInfo = async (email: string) => {
+  const checkAndCreateUser = async (email: string) => {
     const response = await fetch(`/api/user?email=${email}`);
 
-    // 如果没找到用户，就创建一个
-
     if (!response.ok) {
-      throw new Error("Failed to fetch user");
+      // 如果用户不存在，创建用户
+      const newUser = await createUserInfo(user!);
+      setUserInfo(newUser); // 存储用户信息
+      return newUser;
     }
 
-    const userInfo = await response.json();
-    if (userInfo.email !== `sxc${user?.emailAddresses[0].emailAddress}`) {
-      createUserInfo(user!);
-    }
+    const existingUser = await response.json();
+    setUserInfo(existingUser); // 存储用户信息
+    return existingUser;
   };
 
   const createUserInfo = async (user: UserResource) => {
@@ -35,43 +33,58 @@ export default function Home() {
       method: "POST",
       body: JSON.stringify({
         name: user.fullName,
-        email: `xxc${user.emailAddresses[0].emailAddress}`,
+        email: user.emailAddresses[0].emailAddress,
         avatar: user.imageUrl,
         password: "123456",
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         cognitoId: `cognitoId_${user.id}`,
-        teamId: "team_test003",
+        teamId: "",
       }),
     });
 
     if (!response.ok) {
-      throw new Error("Failed to operate project");
+      throw new Error("Failed to create user");
     }
 
     const newUser = await response.json();
-    console.log("newUser", newUser, user);
-
     setUserInfo({ ...newUser, ...user });
+    return newUser;
+  };
+
+  const fetchTeamsAndProjects = async (user: UserResource) => {
+    const teams = await fetch(`/api/teams?userId=${user.id}`).then((res) =>
+      res.json(),
+    );
+    if (teams.length) {
+      setTeams(teams);
+      const projects = await fetch(`/api/projects?teamId=${teams[0].id}`).then(
+        (res) => res.json(),
+      );
+      setProjects(projects);
+    }
   };
 
   useEffect(() => {
     if (user) {
-      getUserInfo(`sxc${user.emailAddresses[0].emailAddress}`);
+      checkAndCreateUser(user.emailAddresses[0].emailAddress).then(
+        (newUser) => {
+          console.log(newUser, "newUser");
+
+          fetchTeamsAndProjects(newUser).then(() => {
+            if (!useStore.getState().teams.length) {
+              // 如果没有团队，提示用户联系管理员
+              // redirect("/empty");
+            }
+          });
+        },
+      );
     }
   }, [user]);
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset className="flex flex-col">
-        <Header />
-        <LayoutBreadcrumb />
-
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <DashbBoard />
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <DashbBoard />
+    </div>
   );
 }

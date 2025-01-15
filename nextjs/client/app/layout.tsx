@@ -45,9 +45,16 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <div className="flex h-full w-full items-center justify-center">
-                {children}
-              </div>
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset className="flex flex-col">
+                  <Header />
+                  <LayoutBreadcrumb />
+                  <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                    {children}
+                  </div>
+                </SidebarInset>
+              </SidebarProvider>
             </ThemeProvider>
           </ReactQueryProvider>
         </body>

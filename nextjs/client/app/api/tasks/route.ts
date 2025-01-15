@@ -47,7 +47,6 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  console.log("data Put", request);
   try {
     const data = await request.json();
     const taskId = data.taskId;

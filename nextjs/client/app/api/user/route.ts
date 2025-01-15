@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { createUser, getUser } from "@/actions/user";
+import { createUser, getUser, updateUser } from "@/actions/user";
 import { NextResponse } from "next/server";
 
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
@@ -35,7 +35,6 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export async function POST(request: Request) {
-  console.log("data", request);
   try {
     const data = await request.json();
 
@@ -44,5 +43,20 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("创建用户时出错:", error);
     return NextResponse.json({ error: "无法创建用户" }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const data = await request.json();
+
+    const userId = data.id;
+    delete data.id;
+
+    const user = await updateUser(userId, data);
+    return NextResponse.json(user, { status: 200 });
+  } catch (error) {
+    console.error("更新用户时出错:", error);
+    return NextResponse.json({ error: "无法更新用户" }, { status: 500 });
   }
 }

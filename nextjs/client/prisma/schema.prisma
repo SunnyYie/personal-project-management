@@ -5,8 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // uncomment next line if you use Prisma <5.10
-  // directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model File {
@@ -37,34 +35,23 @@ model OperationLog {
 }
 
 model User {
-  id        String  @id @default(cuid())
-  // Amazon Cognito 服务中用户的唯一标识符
-  cognitoId String  @unique
-  // 团队ID
-  teamId    String  @unique
-  email     String  @unique
-  name      String
-  avatar    String?
-  role      Role    @default(USER)
-
-  password String
-
-  // 用户创建的任务
-  authoredTasks  Task[]           @relation("TaskAuthor")
-  // 用户被分配的任务
-  assignedTasks  Task[]           @relation("TaskAssignee")
-  // 用户创建的任务分配
-  taskAssignment TaskAssignment[]
-  // 用户创建的附件
+  id             String           @id @default(cuid())
+  email          String           @unique
+  name           String
+  avatar         String?
+  role           Role             @default(USER)
+  password       String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
+  cognitoId      String?          @unique
+  teamId         String?          @unique
   attachments    Attachment[]
-  // 用户创建的评论
   comments       Comment[]
-  //
-  team           Team?            @relation(fields: [teamId], references: [id])
-
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  OperationLog OperationLog[]
+  OperationLog   OperationLog[]
+  assignedTasks  Task[]           @relation("TaskAssignee")
+  authoredTasks  Task[]           @relation("TaskAuthor")
+  taskAssignment TaskAssignment[]
+  UserTeam       UserTeam[]
 }
 
 model VerificationCode {
@@ -75,25 +62,15 @@ model VerificationCode {
   createdAt DateTime @default(now())
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model Team {
-  id     String  @id @default(cuid())
-  name   String
-  avatar String?
-
-  // 项目负责人
+  id                   String        @id @default(cuid())
+  name                 String
+  avatar               String?
   productOwnerUserId   String?
-  // 项目经理
   projectManagerUserId String?
-  // 开发人员
+  createdAt            DateTime      @default(now())
   projectTeams         ProjectTeam[]
-
-  members   User[]
-  createdAt DateTime @default(now())
+  UserTeam             UserTeam[]
 }
 
 model Project {
@@ -102,56 +79,41 @@ model Project {
   description  String?
   startDate    DateTime?
   endDate      DateTime?
-  tasks        Task[]
   projectTeams ProjectTeam[]
+  tasks        Task[]
 }
 
 model ProjectTeam {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   teamId    String
   projectId String
-
   createdAt DateTime @default(now())
-
-  team    Team    @relation(fields: [teamId], references: [id])
-  project Project @relation(fields: [projectId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id])
+  team      Team     @relation(fields: [teamId], references: [id])
 }
 
 model Task {
-  id          String  @id @default(cuid())
-  title       String
-  description String?
-  status      String?
-  // 优先级
-  priority    String?
-  tags        String?
-
-  startDate DateTime?
-  dueDate   DateTime?
-  endDate   DateTime?
-
-  // 任务点数
-  points Int?
-
+  id             String           @id @default(cuid())
+  title          String
+  description    String?
+  status         String?
+  priority       String?
+  tags           String?
+  startDate      DateTime?
+  dueDate        DateTime?
+  endDate        DateTime?
+  points         Int?
   projectId      String
-  // 任务创建者Id
   authorUserId   String
-  // 任务分配者Id
   assignedUserId String?
-
-  // 任务附件
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
   attachments    Attachment[]
-  // 任务评论
   comments       Comment[]
-  // 任务分配表
+  assignee       User?            @relation("TaskAssignee", fields: [assignedUserId], references: [id])
+  author         User             @relation("TaskAuthor", fields: [authorUserId], references: [id])
+  project        Project          @relation(fields: [projectId], references: [id])
   taskAssignment TaskAssignment[]
-
-  author   User    @relation("TaskAuthor", fields: [authorUserId], references: [id])
-  assignee User?   @relation("TaskAssignee", fields: [assignedUserId], references: [id])
-  project  Project @relation(fields: [projectId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model TaskAssignment {
@@ -159,33 +121,41 @@ model TaskAssignment {
   taskId    String
   userId    String
   createdAt DateTime @default(now())
-
-  task Task @relation(fields: [taskId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Attachment {
-  id     String @id @default(cuid())
-  taskId String
-  userId String
-
-  filename String
-  fileURL  String?
-
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  filename  String
+  fileURL   String?
   createdAt DateTime @default(now())
-
-  task Task @relation(fields: [taskId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Comment {
-  id      String @id @default(cuid())
-  taskId  String
-  userId  String
-  content String
-
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  content   String
   createdAt DateTime @default(now())
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
 
-  task Task @relation(fields: [taskId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+model UserTeam {
+  id        String   @id
+  userId    String
+  teamId    String
+  createdAt DateTime @default(now())
+  Team      Team     @relation(fields: [teamId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
 }

@@ -20,9 +20,9 @@ import {
   Workflow,
 } from "lucide-react";
 import { NavProjects } from "./nav-projects";
+import TeamSwitcher from "./team-switcher";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import TeamSwitcher from "./team-switcher";
 
 interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   // projects: Project[];
@@ -74,36 +74,12 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
-  const setTeams = useStore((state) => state.setTeams);
-  const setProjects = useStore((state) => state.setProjects);
-
-  const userInfo = useStore((state) => state.userInfo);
   const teams = useStore((state) => state.teams);
   const projects = useStore((state) => state.projects);
 
   useEffect(() => {
-    console.log("userInfo", userInfo);
-
-    async function fetchData() {
-      const teams = await fetch(`/api/teams?userId=mcgdg001`).then((res) =>
-        res.json(),
-      );
-
-      if (!teams.length) {
-        return;
-      }
-
-      setTeams(teams);
-
-      const projects = await fetch(`/api/projects?teamId=${teams[0].id}`).then(
-        (res) => res.json(),
-      );
-
-      setProjects(projects);
-    }
-
-    fetchData();
-  }, [setTeams, setProjects]);
+    console.log("userInfo", useStore.getState().userInfo);
+  }, []);
 
   if (!teams.length) {
     return null;

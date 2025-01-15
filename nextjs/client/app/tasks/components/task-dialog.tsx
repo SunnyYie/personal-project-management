@@ -34,6 +34,7 @@ import {
 import DatePicker from "@/components/date-picker";
 import { Label } from "@/components/ui/label";
 import { useSearchParams } from "next/navigation";
+import useStore from "@/store";
 
 interface CreateTaskDialogProps {
   isOpen: boolean;
@@ -53,6 +54,8 @@ export function CreateTaskDialog({
 }: CreateTaskDialogProps) {
   const searchParams = useSearchParams();
   const task = searchParams.get("task");
+
+  const userInfo = useStore((state) => state.userInfo);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [start, setStart] = useState<Dayjs>();
@@ -93,8 +96,7 @@ export function CreateTaskDialog({
         },
         body: JSON.stringify({
           ...data,
-          // todo:传入真实的authorUserId
-          authorUserId: "mcgdg01",
+          authorUserId: userInfo.id,
           startDate: start?.toDate().toISOString(),
           dueDate: dueDate?.toDate().toISOString(),
           endDate: end?.toDate().toISOString(),
