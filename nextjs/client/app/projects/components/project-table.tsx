@@ -44,7 +44,6 @@ export default function ProjectTable({
   initialPage,
   pageSize,
 }: ProjectTableProps) {
-  const [projects, setProjects] = useState(initialProjects);
   const [isOpen, setIsDialogOpen] = useState(false);
   const [page, setPage] = useState(initialPage);
   const searchParams = useSearchParams();
@@ -62,7 +61,7 @@ export default function ProjectTable({
     router.push(`/projects?query=${encodeURIComponent(query)}&page=${newPage}`);
   };
 
-  const handleProjectCreated = (newProject: ProjectWithRelations) => {
+  const handleProjectCreated = () => {
     setIsDialogOpen(false);
     router.refresh();
   };
@@ -92,7 +91,7 @@ export default function ProjectTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {projects?.map((project) => (
+          {initialProjects?.map((project) => (
             <TableRow key={project.id}>
               <TableCell>{project.name}</TableCell>
               <TableCell>{project.description}</TableCell>

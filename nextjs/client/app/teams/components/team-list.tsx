@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Team, Project, User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   Table,

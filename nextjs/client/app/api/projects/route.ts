@@ -1,8 +1,8 @@
 import { createProject, getProjectsByTeam } from "@/actions/project";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextApiRequest) {
   try {
     const teamId = req.url?.split("=")[1] as string;
 

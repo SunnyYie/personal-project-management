@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import AddEditMemberModal from "./member-modal";
-import { User, Team } from "@prisma/client";
 import { useState } from "react";
 import { MemberWithTeam } from "@/actions/user";
 

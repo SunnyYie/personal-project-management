@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { User, Team, Role } from "@prisma/client";
+import { Team, Role } from "@prisma/client";
 import { MemberWithTeam } from "@/actions/user";
 
 interface AddEditMemberModalProps {

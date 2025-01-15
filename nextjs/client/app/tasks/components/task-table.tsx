@@ -52,7 +52,6 @@ export default function TaskTable({
   users,
 }: TaskTableProps) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [tasks, setTasks] = useState(initialTasks);
   const [page, setPage] = useState(initialPage);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -79,11 +78,6 @@ export default function TaskTable({
   const handleTaskCreated = () => {
     setIsCreateDialogOpen(false);
     router.push("/tasks");
-  };
-
-  const handleEdit = (task: TaskWithRelations) => {
-    setIsCreateDialogOpen(true);
-    router.push(`/tasks?task=${JSON.stringify(task)}`);
   };
 
   return (
@@ -131,7 +125,7 @@ export default function TaskTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tasks?.map((task) => (
+          {initialTasks?.map((task) => (
             <TableRow key={task.id}>
               <TableCell>{task.title}</TableCell>
               <TableCell>{task.description}</TableCell>

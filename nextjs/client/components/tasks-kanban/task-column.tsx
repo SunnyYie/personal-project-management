@@ -1,4 +1,3 @@
-import { CreateTaskDialog } from "@/app/tasks/components/task-dialog";
 import { EllipsisVertical, Plus } from "lucide-react";
 import { TaskCard } from "./task-card";
 import { Button } from "../ui/button";
@@ -7,7 +6,6 @@ import { TaskWithRelations } from "@/actions/types";
 import { taskStatuses } from "@/types/task.types";
 import { Task } from "@prisma/client";
 import { useDrop } from "react-dnd";
-import { useState } from "react";
 
 interface TaskColumnProps {
   status: Task["status"];

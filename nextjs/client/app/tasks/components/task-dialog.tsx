@@ -35,11 +35,12 @@ import DatePicker from "@/components/date-picker";
 import { Label } from "@/components/ui/label";
 import { useSearchParams } from "next/navigation";
 import useStore from "@/store";
+import { Task } from "@prisma/client";
 
 interface CreateTaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onTaskCreated: (task: any) => void;
+  onTaskCreated: (task: Task) => void;
 
   projects: { id: string; name: string }[];
   users: { id: string; name: string }[];

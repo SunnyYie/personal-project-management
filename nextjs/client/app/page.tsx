@@ -74,7 +74,7 @@ export default function Home() {
           fetchTeamsAndProjects(newUser).then(() => {
             if (!useStore.getState().teams.length) {
               // 如果没有团队，提示用户联系管理员
-              // redirect("/empty");
+              redirect("/empty");
             }
           });
         },

@@ -5,10 +5,11 @@ import {
   ChevronsUpDown,
   Command,
   GalleryVerticalEnd,
+  LucideProps,
   Plus,
 } from "lucide-react";
 import { Team } from "@prisma/client";
-import { useState } from "react";
+import { ForwardRefExoticComponent, RefAttributes, useState } from "react";
 import useStore from "@/store";
 import {
   DropdownMenu,
@@ -44,7 +45,14 @@ export default function TeamSwitcher({ teams }: TeamSwitcherProps) {
   const setActiveTeam = useStore((state) => state.setActiveTeam);
   const setProjects = useStore((state) => state.setProjects);
 
-  const handleSwitchTeam = async (team: Team & { logo: any; plan: string }) => {
+  const handleSwitchTeam = async (
+    team: Team & {
+      logo: ForwardRefExoticComponent<
+        Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+      >;
+      plan: string;
+    },
+  ) => {
     try {
       setActiveTeamState(team);
       setActiveTeam(team);

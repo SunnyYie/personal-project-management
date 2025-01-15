@@ -24,10 +24,6 @@ import TeamSwitcher from "./team-switcher";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 
-interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
-  // projects: Project[];
-}
-
 const data = {
   user: {
     name: "shadcn",
@@ -73,7 +69,7 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: AppSidebarProps) {
+export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   const teams = useStore((state) => state.teams);
   const projects = useStore((state) => state.projects);
 
