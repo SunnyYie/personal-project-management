@@ -8,6 +8,7 @@ import "./globals.css";
 import { LayoutBreadcrumb } from "./components/header/components/breadcrumb";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Analytics } from "@vercel/analytics/react";
 import { AppSidebar } from "./components/siderbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import Header from "./components/header";
@@ -52,6 +53,7 @@ export default function RootLayout({
                   <LayoutBreadcrumb />
                   <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                     {children}
+                    <Analytics />
                   </div>
                 </SidebarInset>
               </SidebarProvider>
