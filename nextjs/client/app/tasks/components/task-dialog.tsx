@@ -137,12 +137,6 @@ export function CreateTaskDialog({
     }
   }, [task]);
 
-  useEffect(() => {
-    if (errors) {
-      console.log(errors);
-    }
-  }, [errors]);
-
   return (
     <Dialog
       open={isOpen}

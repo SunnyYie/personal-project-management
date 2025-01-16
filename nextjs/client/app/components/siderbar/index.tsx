@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentProps, useEffect } from "react";
+import { ComponentProps, useEffect, useState } from "react";
 import useStore from "@/store";
 
 import {
@@ -19,6 +19,8 @@ import {
   User,
   Workflow,
 } from "lucide-react";
+import { SidebarSkeleton } from "./sidebar-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { NavProjects } from "./nav-projects";
 import TeamSwitcher from "./team-switcher";
 import { NavMain } from "./nav-main";
@@ -72,13 +74,29 @@ const data = {
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   const teams = useStore((state) => state.teams);
   const projects = useStore((state) => state.projects);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("userInfo", useStore.getState().userInfo);
-  }, []);
+    if (teams.length && projects.length) {
+      setLoading(false);
+    }
+  }, [teams, projects]);
 
-  if (!teams.length) {
-    return null;
+  if (loading) {
+    return (
+      <Sidebar collapsible="icon" {...props}>
+        <SidebarHeader>
+          <Skeleton className="h-10 w-[240px]" />
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarSkeleton />
+        </SidebarContent>
+        <SidebarFooter>
+          <Skeleton className="h-10 w-[240px]" />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+    );
   }
 
   return (

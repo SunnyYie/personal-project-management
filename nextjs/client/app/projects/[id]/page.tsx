@@ -1,9 +1,40 @@
 import { ProjectTabs } from "./components/project-tabs";
 import { ArrowLeft } from "lucide-react";
 
-import { getTasksByProjectId } from "@/actions/task";
-import { getProjectById } from "@/actions/project";
+import { unstable_cache } from "next/cache";
+import prisma from "@/lib/prisma";
 import Link from "next/link";
+
+// 缓存项目数据
+const getProjectById = unstable_cache(
+  async (projectId: string) => {
+    return await prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+  },
+  ["projects"],
+  { revalidate: 3600, tags: ["projects"] },
+);
+// 缓存任务数据
+const getTasksByProjectId = unstable_cache(
+  async (projectId) => {
+    return await prisma.task.findMany({
+      where: {
+        projectId,
+      },
+      include: {
+        comments: true,
+        assignee: true,
+        author: true,
+        attachments: true,
+      },
+    });
+  },
+  ["tasks"],
+  { revalidate: 3600, tags: ["tasks"] },
+);
 
 export default async function ProjectDetailsPage({
   params,
@@ -13,14 +44,10 @@ export default async function ProjectDetailsPage({
   const searchParams = await params;
   let tasks;
 
-  const {
-    data: { body: project },
-  } = await getProjectById(searchParams.id);
+  const project = await getProjectById(searchParams.id);
 
   if (project) {
-    const {
-      data: { body: tasksData },
-    } = await getTasksByProjectId(project.id);
+    const tasksData = await getTasksByProjectId(project.id);
     tasks = tasksData;
   }
 

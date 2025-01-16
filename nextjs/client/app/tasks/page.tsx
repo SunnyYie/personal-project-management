@@ -1,7 +1,17 @@
 import { getTasksByPage } from "@/actions/task";
 import TaskTable from "./components/task-table";
-import { getProjects } from "@/actions/project";
+// import { getProjects } from "@/actions/project";
+import { unstable_cache } from "next/cache";
 import { getUsers } from "@/actions/user";
+import prisma from "@/lib/prisma";
+
+const getProjects = unstable_cache(
+  async () => {
+    return await prisma.project.findMany();
+  },
+  ["projects"],
+  { revalidate: 3600, tags: ["projects"] },
+);
 
 export default async function TasksPage({
   searchParams,
@@ -11,9 +21,7 @@ export default async function TasksPage({
   const page = Number(searchParams?.page) || 1;
   const pageSize = 10;
 
-  const {
-    data: { body: projects },
-  } = await getProjects();
+  const projects = await getProjects();
   const {
     data: { body: Tasks, totalCount },
   } = await getTasksByPage(page, pageSize);

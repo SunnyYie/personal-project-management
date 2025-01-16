@@ -12,6 +12,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { AppSidebar } from "./components/siderbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import Header from "./components/header";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,7 +49,9 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <SidebarProvider>
-                <AppSidebar />
+                <Suspense fallback={<Loading />}>
+                  <AppSidebar />
+                </Suspense>
                 <SidebarInset className="flex flex-col">
                   <Header />
                   <LayoutBreadcrumb />
